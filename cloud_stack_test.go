@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 )
@@ -95,7 +96,7 @@ func TestStacks(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getStacksJSON)
 	defer server.Close()
 
-	stacks, err := client.Stacks()
+	stacks, err := client.Stacks(context.Background())
 
 	if err != nil {
 		t.Fatalf("expected error to be nil; got: %s", err.Error())
@@ -142,7 +143,7 @@ func TestCreateStack(t *testing.T) {
 		URL:    "",
 	}
 
-	actualStackID, err := client.NewStack(stack)
+	actualStackID, err := client.NewStack(context.Background(), stack)
 
 	if err != nil {
 		t.Fatal(err)
@@ -164,7 +165,7 @@ func TestStackBySlug(t *testing.T) {
 	defer server.Close()
 
 	expectedStackSlug := "mystack"
-	resp, err := client.StackBySlug(expectedStackSlug)
+	resp, err := client.StackBySlug(context.Background(), expectedStackSlug)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,7 +182,7 @@ func TestStackByID(t *testing.T) {
 	defer server.Close()
 
 	expectedStackID := int64(1)
-	resp, err := client.StackByID(expectedStackID)
+	resp, err := client.StackByID(context.Background(), expectedStackID)
 
 	if err != nil {
 		t.Fatal(err)
@@ -204,7 +205,7 @@ func TestUpdateStack(t *testing.T) {
 		Description: "Stack update",
 	}
 
-	err := client.UpdateStack(1, stack)
+	err := client.UpdateStack(context.Background(), 1, stack)
 	if err != nil {
 		t.Error(err)
 	}
@@ -214,7 +215,7 @@ func TestDeleteStack(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getStacksJSON)
 	defer server.Close()
 
-	err := client.DeleteStack("mystack")
+	err := client.DeleteStack(context.Background(), "mystack")
 
 	// The DELETE api returns an error so check if there is an error
 	if err != nil {

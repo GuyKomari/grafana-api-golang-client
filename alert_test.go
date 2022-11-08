@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"net/url"
 	"strings"
 	"testing"
@@ -53,7 +54,7 @@ func TestAlerts(t *testing.T) {
 	params := url.Values{}
 	params.Add("dashboardId", "123")
 
-	as, err := client.Alerts(params)
+	as, err := client.Alerts(context.Background(), params)
 	if err != nil {
 		t.Error(err)
 	}
@@ -72,7 +73,7 @@ func TestAlerts_500(t *testing.T) {
 	params := url.Values{}
 	params.Add("dashboardId", "123")
 
-	_, err := client.Alerts(params)
+	_, err := client.Alerts(context.Background(), params)
 	if !strings.Contains(err.Error(), "status: 500") {
 		t.Errorf("expected error to contain 'status: 500'; got: %s", err.Error())
 	}
@@ -82,7 +83,7 @@ func TestAlert(t *testing.T) {
 	server, client := gapiTestTools(t, 200, alertJSON)
 	defer server.Close()
 
-	res, err := client.Alert(1)
+	res, err := client.Alert(context.Background(), 1)
 	if err != nil {
 		t.Error(err)
 	}
@@ -98,7 +99,7 @@ func TestAlert_500(t *testing.T) {
 	server, client := gapiTestTools(t, 500, alertJSON)
 	defer server.Close()
 
-	_, err := client.Alert(1)
+	_, err := client.Alert(context.Background(), 1)
 	if !strings.Contains(err.Error(), "status: 500") {
 		t.Errorf("expected error to contain 'status: 500'; got: %s", err.Error())
 	}
@@ -108,7 +109,7 @@ func TestPauseAlert(t *testing.T) {
 	server, client := gapiTestTools(t, 200, pauseAlertJSON)
 	defer server.Close()
 
-	res, err := client.PauseAlert(1)
+	res, err := client.PauseAlert(context.Background(), 1)
 	if err != nil {
 		t.Error(err)
 	}
@@ -124,7 +125,7 @@ func TestPauseAlert_500(t *testing.T) {
 	server, client := gapiTestTools(t, 500, pauseAlertJSON)
 	defer server.Close()
 
-	_, err := client.PauseAlert(1)
+	_, err := client.PauseAlert(context.Background(), 1)
 	if !strings.Contains(err.Error(), "status: 500") {
 		t.Errorf("expected error to contain 'status: 500'; got: %s", err.Error())
 	}

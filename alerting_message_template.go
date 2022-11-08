@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -13,9 +14,9 @@ type AlertingMessageTemplate struct {
 }
 
 // MessageTemplates fetches all message templates.
-func (c *Client) MessageTemplates() ([]AlertingMessageTemplate, error) {
+func (c *Client) MessageTemplates(ctx context.Context) ([]AlertingMessageTemplate, error) {
 	ts := make([]AlertingMessageTemplate, 0)
-	err := c.request("GET", "/api/v1/provisioning/templates", nil, nil, &ts)
+	err := c.request(ctx, "GET", "/api/v1/provisioning/templates", nil, nil, &ts)
 	if err != nil {
 		return nil, err
 	}
@@ -23,10 +24,10 @@ func (c *Client) MessageTemplates() ([]AlertingMessageTemplate, error) {
 }
 
 // MessageTemplate fetches a single message template, identified by its name.
-func (c *Client) MessageTemplate(name string) (*AlertingMessageTemplate, error) {
+func (c *Client) MessageTemplate(ctx context.Context, name string) (*AlertingMessageTemplate, error) {
 	t := AlertingMessageTemplate{}
 	uri := fmt.Sprintf("/api/v1/provisioning/templates/%s", name)
-	err := c.request("GET", uri, nil, nil, &t)
+	err := c.request(ctx, "GET", uri, nil, nil, &t)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func (c *Client) MessageTemplate(name string) (*AlertingMessageTemplate, error) 
 }
 
 // SetMessageTemplate creates or updates a message template.
-func (c *Client) SetMessageTemplate(name, content string) error {
+func (c *Client) SetMessageTemplate(ctx context.Context, name, content string) error {
 	req := struct {
 		Template string `json:"template"`
 	}{Template: content}
@@ -44,11 +45,11 @@ func (c *Client) SetMessageTemplate(name, content string) error {
 	}
 
 	uri := fmt.Sprintf("/api/v1/provisioning/templates/%s", name)
-	return c.request("PUT", uri, nil, bytes.NewBuffer(body), nil)
+	return c.request(ctx, "PUT", uri, nil, bytes.NewBuffer(body), nil)
 }
 
 // DeleteMessageTemplate deletes a message template.
-func (c *Client) DeleteMessageTemplate(name string) error {
+func (c *Client) DeleteMessageTemplate(ctx context.Context, name string) error {
 	uri := fmt.Sprintf("/api/v1/provisioning/templates/%s", name)
-	return c.request("DELETE", uri, nil, nil, nil)
+	return c.request(ctx, "DELETE", uri, nil, nil, nil)
 }

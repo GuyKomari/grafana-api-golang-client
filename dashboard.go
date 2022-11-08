@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -38,7 +39,7 @@ type Dashboard struct {
 
 // SaveDashboard is a deprecated method for saving a Grafana dashboard. Use NewDashboard.
 // Deprecated: Use NewDashboard instead.
-func (c *Client) SaveDashboard(model map[string]interface{}, overwrite bool) (*DashboardSaveResponse, error) {
+func (c *Client) SaveDashboard(ctx context.Context, model map[string]interface{}, overwrite bool) (*DashboardSaveResponse, error) {
 	wrapper := map[string]interface{}{
 		"dashboard": model,
 		"overwrite": overwrite,
@@ -49,7 +50,7 @@ func (c *Client) SaveDashboard(model map[string]interface{}, overwrite bool) (*D
 	}
 
 	result := &DashboardSaveResponse{}
-	err = c.request("POST", "/api/dashboards/db", nil, bytes.NewBuffer(data), &result)
+	err = c.request(ctx, "POST", "/api/dashboards/db", nil, bytes.NewBuffer(data), &result)
 	if err != nil {
 		return nil, err
 	}
@@ -58,14 +59,14 @@ func (c *Client) SaveDashboard(model map[string]interface{}, overwrite bool) (*D
 }
 
 // NewDashboard creates a new Grafana dashboard.
-func (c *Client) NewDashboard(dashboard Dashboard) (*DashboardSaveResponse, error) {
+func (c *Client) NewDashboard(ctx context.Context, dashboard Dashboard) (*DashboardSaveResponse, error) {
 	data, err := json.Marshal(dashboard)
 	if err != nil {
 		return nil, err
 	}
 
 	result := &DashboardSaveResponse{}
-	err = c.request("POST", "/api/dashboards/db", nil, bytes.NewBuffer(data), &result)
+	err = c.request(ctx, "POST", "/api/dashboards/db", nil, bytes.NewBuffer(data), &result)
 	if err != nil {
 		return nil, err
 	}
@@ -74,27 +75,27 @@ func (c *Client) NewDashboard(dashboard Dashboard) (*DashboardSaveResponse, erro
 }
 
 // Dashboards fetches and returns all dashboards.
-func (c *Client) Dashboards() ([]FolderDashboardSearchResponse, error) {
+func (c *Client) Dashboards(ctx context.Context) ([]FolderDashboardSearchResponse, error) {
 	params := url.Values{
 		"type": {"dash-db"},
 	}
-	return c.FolderDashboardSearch(params)
+	return c.FolderDashboardSearch(ctx, params)
 }
 
 // Dashboard will be removed.
 // Deprecated: Starting from Grafana v5.0. Use DashboardByUID instead.
-func (c *Client) Dashboard(slug string) (*Dashboard, error) {
-	return c.dashboard(fmt.Sprintf("/api/dashboards/db/%s", slug))
+func (c *Client) Dashboard(ctx context.Context, slug string) (*Dashboard, error) {
+	return c.dashboard(ctx, fmt.Sprintf("/api/dashboards/db/%s", slug))
 }
 
 // DashboardByUID gets a dashboard by UID.
-func (c *Client) DashboardByUID(uid string) (*Dashboard, error) {
-	return c.dashboard(fmt.Sprintf("/api/dashboards/uid/%s", uid))
+func (c *Client) DashboardByUID(ctx context.Context, uid string) (*Dashboard, error) {
+	return c.dashboard(ctx, fmt.Sprintf("/api/dashboards/uid/%s", uid))
 }
 
 // DashboardsByIDs uses the folder and dashboard search endpoint to find
 // dashboards by list of dashboard IDs.
-func (c *Client) DashboardsByIDs(ids []int64) ([]FolderDashboardSearchResponse, error) {
+func (c *Client) DashboardsByIDs(ctx context.Context, ids []int64) ([]FolderDashboardSearchResponse, error) {
 	dashboardIdsJSON, err := json.Marshal(ids)
 	if err != nil {
 		return nil, err
@@ -104,12 +105,12 @@ func (c *Client) DashboardsByIDs(ids []int64) ([]FolderDashboardSearchResponse, 
 		"type":         {"dash-db"},
 		"dashboardIds": {string(dashboardIdsJSON)},
 	}
-	return c.FolderDashboardSearch(params)
+	return c.FolderDashboardSearch(ctx, params)
 }
 
-func (c *Client) dashboard(path string) (*Dashboard, error) {
+func (c *Client) dashboard(ctx context.Context, path string) (*Dashboard, error) {
 	result := &Dashboard{}
-	err := c.request("GET", path, nil, nil, &result)
+	err := c.request(ctx, "GET", path, nil, nil, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -120,15 +121,15 @@ func (c *Client) dashboard(path string) (*Dashboard, error) {
 
 // DeleteDashboard will be removed.
 // Deprecated: Starting from Grafana v5.0. Use DeleteDashboardByUID instead.
-func (c *Client) DeleteDashboard(slug string) error {
-	return c.deleteDashboard(fmt.Sprintf("/api/dashboards/db/%s", slug))
+func (c *Client) DeleteDashboard(ctx context.Context, slug string) error {
+	return c.deleteDashboard(ctx, fmt.Sprintf("/api/dashboards/db/%s", slug))
 }
 
 // DeleteDashboardByUID deletes a dashboard by UID.
-func (c *Client) DeleteDashboardByUID(uid string) error {
-	return c.deleteDashboard(fmt.Sprintf("/api/dashboards/uid/%s", uid))
+func (c *Client) DeleteDashboardByUID(ctx context.Context, uid string) error {
+	return c.deleteDashboard(ctx, fmt.Sprintf("/api/dashboards/uid/%s", uid))
 }
 
-func (c *Client) deleteDashboard(path string) error {
-	return c.request("DELETE", path, nil, nil, nil)
+func (c *Client) deleteDashboard(ctx context.Context, path string) error {
+	return c.request(ctx, "DELETE", path, nil, nil, nil)
 }

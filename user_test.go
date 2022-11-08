@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -17,7 +18,7 @@ func TestUsers(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getUsersJSON)
 	defer server.Close()
 
-	resp, err := client.Users()
+	resp, err := client.Users(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -41,7 +42,7 @@ func TestUser(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getUserJSON)
 	defer server.Close()
 
-	user, err := client.User(1)
+	user, err := client.User(context.Background(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,7 +60,7 @@ func TestUserByEmail(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getUserByEmailJSON)
 	defer server.Close()
 
-	user, err := client.UserByEmail("admin@localhost")
+	user, err := client.UserByEmail(context.Background(), "admin@localhost")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,12 +78,12 @@ func TestUserUpdate(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getUserUpdateJSON)
 	defer server.Close()
 
-	user, err := client.User(4)
+	user, err := client.User(context.Background(), 4)
 	if err != nil {
 		t.Fatal(err)
 	}
 	user.IsAdmin = true
-	err = client.UserUpdate(user)
+	err = client.UserUpdate(context.Background(), user)
 	if err != nil {
 		t.Error(err)
 	}

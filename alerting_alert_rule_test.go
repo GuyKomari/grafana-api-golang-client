@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 	"time"
@@ -13,7 +14,7 @@ func TestAlertRules(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getAlertRuleJSON)
 		defer server.Close()
 
-		alertRule, err := client.AlertRule("123abcd")
+		alertRule, err := client.AlertRule(context.Background(), "123abcd")
 
 		if err != nil {
 			t.Error(err)
@@ -27,7 +28,7 @@ func TestAlertRules(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getAlertRuleGroupJSON)
 		defer server.Close()
 
-		group, err := client.AlertRuleGroup("project_test", "eval_group_1")
+		group, err := client.AlertRuleGroup(context.Background(), "project_test", "eval_group_1")
 
 		if err != nil {
 			t.Error(err)
@@ -48,7 +49,7 @@ func TestAlertRules(t *testing.T) {
 		server, client := gapiTestTools(t, 404, "")
 		defer server.Close()
 
-		alertRule, err := client.AlertRule("does not exist")
+		alertRule, err := client.AlertRule(context.Background(), "does not exist")
 
 		if err == nil {
 			t.Errorf("expected error but got nil")
@@ -60,7 +61,7 @@ func TestAlertRules(t *testing.T) {
 		server, client := gapiTestTools(t, 404, "")
 		defer server.Close()
 
-		group, err := client.AlertRuleGroup("d8-gk06nz", "does not exist")
+		group, err := client.AlertRuleGroup(context.Background(), "d8-gk06nz", "does not exist")
 
 		if err == nil {
 			t.Errorf("expected error but got nil")
@@ -73,7 +74,7 @@ func TestAlertRules(t *testing.T) {
 		defer server.Close()
 		alertRule := createAlertRule()
 
-		uid, err := client.NewAlertRule(&alertRule)
+		uid, err := client.NewAlertRule(context.Background(), &alertRule)
 
 		if err != nil {
 			t.Error(err)
@@ -88,7 +89,7 @@ func TestAlertRules(t *testing.T) {
 		defer server.Close()
 		group := createAlertRuleGroup()
 
-		err := client.SetAlertRuleGroup(group)
+		err := client.SetAlertRuleGroup(context.Background(), group)
 
 		if err != nil {
 			t.Error(err)
@@ -101,7 +102,7 @@ func TestAlertRules(t *testing.T) {
 		alertRule := createAlertRule()
 		alertRule.UID = "foobar"
 
-		err := client.UpdateAlertRule(&alertRule)
+		err := client.UpdateAlertRule(context.Background(), &alertRule)
 
 		if err != nil {
 			t.Error(err)
@@ -112,7 +113,7 @@ func TestAlertRules(t *testing.T) {
 		server, client := gapiTestTools(t, 204, "")
 		defer server.Close()
 
-		err := client.DeleteAlertRule("123abcd")
+		err := client.DeleteAlertRule(context.Background(), "123abcd")
 
 		if err != nil {
 			t.Error(err)

@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -27,7 +28,7 @@ func TestSnapshotCreate(t *testing.T) {
 		Expires: 3600,
 	}
 
-	resp, err := client.NewSnapshot(snapshot)
+	resp, err := client.NewSnapshot(context.Background(), snapshot)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +41,7 @@ func TestSnapshotCreate(t *testing.T) {
 
 	for _, code := range []int{400, 401, 403, 412} {
 		server.code = code
-		_, err = client.NewSnapshot(snapshot)
+		_, err = client.NewSnapshot(context.Background(), snapshot)
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}

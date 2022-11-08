@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -86,7 +87,7 @@ func TestReport(t *testing.T) {
 	defer server.Close()
 
 	report := int64(4)
-	resp, err := client.Report(report)
+	resp, err := client.Report(context.Background(), report)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +103,7 @@ func TestNewReport(t *testing.T) {
 	server, client := gapiTestTools(t, 200, createReportJSON)
 	defer server.Close()
 
-	resp, err := client.NewReport(testReport)
+	resp, err := client.NewReport(context.Background(), testReport)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -118,7 +119,7 @@ func TestUpdateReport(t *testing.T) {
 	server, client := gapiTestTools(t, 200, "")
 	defer server.Close()
 
-	err := client.UpdateReport(testReport)
+	err := client.UpdateReport(context.Background(), testReport)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,7 +129,7 @@ func TestDeleteReport(t *testing.T) {
 	server, client := gapiTestTools(t, 200, "")
 	defer server.Close()
 
-	err := client.DeleteReport(4)
+	err := client.DeleteReport(context.Background(), 4)
 	if err != nil {
 		t.Fatal(err)
 	}

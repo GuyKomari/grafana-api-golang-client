@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -36,7 +37,7 @@ type DataSource struct {
 }
 
 // NewDataSource creates a new Grafana data source.
-func (c *Client) NewDataSource(s *DataSource) (int64, error) {
+func (c *Client) NewDataSource(ctx context.Context, s *DataSource) (int64, error) {
 	data, err := json.Marshal(s)
 	if err != nil {
 		return 0, err
@@ -46,7 +47,7 @@ func (c *Client) NewDataSource(s *DataSource) (int64, error) {
 		ID int64 `json:"id"`
 	}{}
 
-	err = c.request("POST", "/api/datasources", nil, bytes.NewBuffer(data), &result)
+	err = c.request(ctx, "POST", "/api/datasources", nil, bytes.NewBuffer(data), &result)
 	if err != nil {
 		return 0, err
 	}
@@ -55,31 +56,31 @@ func (c *Client) NewDataSource(s *DataSource) (int64, error) {
 }
 
 // UpdateDataSource updates a Grafana data source.
-func (c *Client) UpdateDataSource(s *DataSource) error {
+func (c *Client) UpdateDataSource(ctx context.Context, s *DataSource) error {
 	path := fmt.Sprintf("/api/datasources/%d", s.ID)
 	data, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
 
-	return c.request("PUT", path, nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "PUT", path, nil, bytes.NewBuffer(data), nil)
 }
 
-func (c *Client) UpdateDataSourceByUID(s *DataSource) error {
+func (c *Client) UpdateDataSourceByUID(ctx context.Context, s *DataSource) error {
 	path := fmt.Sprintf("/api/datasources/uid/%s", s.UID)
 	data, err := json.Marshal(s)
 	if err != nil {
 		return err
 	}
 
-	return c.request("PUT", path, nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "PUT", path, nil, bytes.NewBuffer(data), nil)
 }
 
 // DataSource fetches and returns the Grafana data source whose ID it's passed.
-func (c *Client) DataSource(id int64) (*DataSource, error) {
+func (c *Client) DataSource(ctx context.Context, id int64) (*DataSource, error) {
 	path := fmt.Sprintf("/api/datasources/%d", id)
 	result := &DataSource{}
-	err := c.request("GET", path, nil, nil, result)
+	err := c.request(ctx, "GET", path, nil, nil, result)
 	if err != nil {
 		return nil, err
 	}
@@ -88,10 +89,10 @@ func (c *Client) DataSource(id int64) (*DataSource, error) {
 }
 
 // DataSourceByUID fetches and returns the Grafana data source whose UID is passed.
-func (c *Client) DataSourceByUID(uid string) (*DataSource, error) {
+func (c *Client) DataSourceByUID(ctx context.Context, uid string) (*DataSource, error) {
 	path := fmt.Sprintf("/api/datasources/uid/%s", uid)
 	result := &DataSource{}
-	err := c.request("GET", path, nil, nil, result)
+	err := c.request(ctx, "GET", path, nil, nil, result)
 	if err != nil {
 		return nil, err
 	}
@@ -100,14 +101,14 @@ func (c *Client) DataSourceByUID(uid string) (*DataSource, error) {
 }
 
 // DataSourceIDByName returns the Grafana data source ID by name.
-func (c *Client) DataSourceIDByName(name string) (int64, error) {
+func (c *Client) DataSourceIDByName(ctx context.Context, name string) (int64, error) {
 	path := fmt.Sprintf("/api/datasources/id/%s", name)
 
 	result := struct {
 		ID int64 `json:"id"`
 	}{}
 
-	err := c.request("GET", path, nil, nil, &result)
+	err := c.request(ctx, "GET", path, nil, nil, &result)
 	if err != nil {
 		return 0, err
 	}
@@ -116,9 +117,9 @@ func (c *Client) DataSourceIDByName(name string) (int64, error) {
 }
 
 // DataSources returns all data sources as defined in Grafana.
-func (c *Client) DataSources() ([]*DataSource, error) {
+func (c *Client) DataSources(ctx context.Context) ([]*DataSource, error) {
 	result := make([]*DataSource, 0)
-	err := c.request("GET", "/api/datasources", nil, nil, &result)
+	err := c.request(ctx, "GET", "/api/datasources", nil, nil, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -127,8 +128,8 @@ func (c *Client) DataSources() ([]*DataSource, error) {
 }
 
 // DeleteDataSource deletes the Grafana data source whose ID it's passed.
-func (c *Client) DeleteDataSource(id int64) error {
+func (c *Client) DeleteDataSource(ctx context.Context, id int64) error {
 	path := fmt.Sprintf("/api/datasources/%d", id)
 
-	return c.request("DELETE", path, nil, nil, nil)
+	return c.request(ctx, "DELETE", path, nil, nil, nil)
 }

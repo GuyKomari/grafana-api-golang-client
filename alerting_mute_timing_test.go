@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -11,7 +12,7 @@ func TestMuteTimings(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getMuteTimingsJSON)
 		defer server.Close()
 
-		mts, err := client.MuteTimings()
+		mts, err := client.MuteTimings(context.Background())
 
 		if err != nil {
 			t.Error(err)
@@ -32,7 +33,7 @@ func TestMuteTimings(t *testing.T) {
 		server, client := gapiTestTools(t, 200, muteTimingJSON)
 		defer server.Close()
 
-		mt, err := client.MuteTiming("timing one")
+		mt, err := client.MuteTiming(context.Background(), "timing one")
 
 		if err != nil {
 			t.Error(err)
@@ -47,7 +48,7 @@ func TestMuteTimings(t *testing.T) {
 		server, client := gapiTestTools(t, 404, muteTimingJSON)
 		defer server.Close()
 
-		mt, err := client.MuteTiming("does not exist")
+		mt, err := client.MuteTiming(context.Background(), "does not exist")
 
 		if err == nil {
 			t.Errorf("expected error but got nil")
@@ -60,7 +61,7 @@ func TestMuteTimings(t *testing.T) {
 		defer server.Close()
 		mt := createMuteTiming()
 
-		err := client.NewMuteTiming(&mt)
+		err := client.NewMuteTiming(context.Background(), &mt)
 
 		if err != nil {
 			t.Error(err)
@@ -73,7 +74,7 @@ func TestMuteTimings(t *testing.T) {
 		mt := createMuteTiming()
 		mt.TimeIntervals[0].Weekdays = []WeekdayRange{"tuesday", "thursday"}
 
-		err := client.UpdateMuteTiming(&mt)
+		err := client.UpdateMuteTiming(context.Background(), &mt)
 
 		if err != nil {
 			t.Error(err)
@@ -84,7 +85,7 @@ func TestMuteTimings(t *testing.T) {
 		server, client := gapiTestTools(t, 204, muteTimingJSON)
 		defer server.Close()
 
-		err := client.DeleteMuteTiming("timing two")
+		err := client.DeleteMuteTiming(context.Background(), "timing two")
 
 		if err != nil {
 			t.Error(err)

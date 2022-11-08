@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -35,9 +36,9 @@ type PauseAlertResponse struct {
 }
 
 // Alerts fetches the annotations queried with the params it's passed.
-func (c *Client) Alerts(params url.Values) ([]Alert, error) {
+func (c *Client) Alerts(ctx context.Context, params url.Values) ([]Alert, error) {
 	result := []Alert{}
-	err := c.request("GET", "/api/alerts", params, nil, &result)
+	err := c.request(ctx, "GET", "/api/alerts", params, nil, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -46,10 +47,10 @@ func (c *Client) Alerts(params url.Values) ([]Alert, error) {
 }
 
 // Alert fetches and returns an individual Grafana alert.
-func (c *Client) Alert(id int64) (Alert, error) {
+func (c *Client) Alert(ctx context.Context, id int64) (Alert, error) {
 	path := fmt.Sprintf("/api/alerts/%d", id)
 	result := Alert{}
-	err := c.request("GET", path, nil, nil, &result)
+	err := c.request(ctx, "GET", path, nil, nil, &result)
 	if err != nil {
 		return result, err
 	}
@@ -58,7 +59,7 @@ func (c *Client) Alert(id int64) (Alert, error) {
 }
 
 // PauseAlert pauses the Grafana alert whose ID it's passed.
-func (c *Client) PauseAlert(id int64) (PauseAlertResponse, error) {
+func (c *Client) PauseAlert(ctx context.Context, id int64) (PauseAlertResponse, error) {
 	path := fmt.Sprintf("/api/alerts/%d", id)
 	result := PauseAlertResponse{}
 	data, err := json.Marshal(PauseAlertRequest{
@@ -68,7 +69,7 @@ func (c *Client) PauseAlert(id int64) (PauseAlertResponse, error) {
 		return result, err
 	}
 
-	err = c.request("POST", path, nil, bytes.NewBuffer(data), &result)
+	err = c.request(ctx, "POST", path, nil, bytes.NewBuffer(data), &result)
 	if err != nil {
 		return result, err
 	}

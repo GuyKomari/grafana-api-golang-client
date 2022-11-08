@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -79,7 +80,7 @@ func TestAlertNotifications(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getAlertNotificationsJSON)
 	defer server.Close()
 
-	alertnotifications, err := client.AlertNotifications()
+	alertnotifications, err := client.AlertNotifications(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
@@ -99,7 +100,7 @@ func TestAlertNotification(t *testing.T) {
 	defer server.Close()
 
 	alertnotification := int64(1)
-	resp, err := client.AlertNotification(alertnotification)
+	resp, err := client.AlertNotification(context.Background(), alertnotification)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -126,7 +127,7 @@ func TestNewAlertNotification(t *testing.T) {
 			"addresses": "dev@grafana.com",
 		},
 	}
-	resp, err := client.NewAlertNotification(an)
+	resp, err := client.NewAlertNotification(context.Background(), an)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +156,7 @@ func TestUpdateAlertNotification(t *testing.T) {
 		},
 	}
 
-	err := client.UpdateAlertNotification(an)
+	err := client.UpdateAlertNotification(context.Background(), an)
 	if err != nil {
 		t.Error(err)
 	}
@@ -165,7 +166,7 @@ func TestDeleteAlertNotification(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deletedAlertNotificationJSON)
 	defer server.Close()
 
-	err := client.DeleteAlertNotification(1)
+	err := client.DeleteAlertNotification(context.Background(), 1)
 	if err != nil {
 		t.Error(err)
 	}

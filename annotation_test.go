@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"net/url"
 	"testing"
 
@@ -56,7 +57,7 @@ func TestAnnotations(t *testing.T) {
 	params.Add("to", "1507281278816")
 	params.Add("limit", "100")
 
-	as, err := client.Annotations(params)
+	as, err := client.Annotations(context.Background(), params)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +82,7 @@ func TestNewAnnotation(t *testing.T) {
 		Tags:        []string{"tag1", "tag2"},
 		Text:        "text description",
 	}
-	res, err := client.NewAnnotation(&a)
+	res, err := client.NewAnnotation(context.Background(), &a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +101,7 @@ func TestUpdateAnnotation(t *testing.T) {
 	a := Annotation{
 		Text: "new text description",
 	}
-	res, err := client.UpdateAnnotation(1, &a)
+	res, err := client.UpdateAnnotation(context.Background(), 1, &a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,7 +120,7 @@ func TestPatchAnnotation(t *testing.T) {
 	a := Annotation{
 		Text: "new text description",
 	}
-	res, err := client.PatchAnnotation(1, &a)
+	res, err := client.PatchAnnotation(context.Background(), 1, &a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +142,7 @@ func TestNewGraphiteAnnotation(t *testing.T) {
 		Tags: []string{"tag1", "tag2"},
 		Data: "data",
 	}
-	res, err := client.NewGraphiteAnnotation(&a)
+	res, err := client.NewGraphiteAnnotation(context.Background(), &a)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +158,7 @@ func TestDeleteAnnotation(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deleteAnnotationJSON)
 	defer server.Close()
 
-	res, err := client.DeleteAnnotation(1)
+	res, err := client.DeleteAnnotation(context.Background(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,7 +174,7 @@ func TestDeleteAnnotationByRegionID(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deleteAnnotationJSON)
 	defer server.Close()
 
-	res, err := client.DeleteAnnotationByRegionID(1)
+	res, err := client.DeleteAnnotationByRegionID(context.Background(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}

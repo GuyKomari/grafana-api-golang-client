@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -40,7 +41,7 @@ type TeamMember struct {
 }
 
 // SearchTeam searches Grafana teams and returns the results.
-func (c *Client) SearchTeam(query string) (*SearchTeam, error) {
+func (c *Client) SearchTeam(ctx context.Context, query string) (*SearchTeam, error) {
 	var result SearchTeam
 
 	page := "1"
@@ -51,7 +52,7 @@ func (c *Client) SearchTeam(query string) (*SearchTeam, error) {
 	queryValues.Set("perPage", perPage)
 	queryValues.Set("query", query)
 
-	err := c.request("GET", path, queryValues, nil, &result)
+	err := c.request(ctx, "GET", path, queryValues, nil, &result)
 	if err != nil {
 		return nil, err
 	}
@@ -60,9 +61,9 @@ func (c *Client) SearchTeam(query string) (*SearchTeam, error) {
 }
 
 // Team fetches and returns the Grafana team whose ID it's passed.
-func (c *Client) Team(id int64) (*Team, error) {
+func (c *Client) Team(ctx context.Context, id int64) (*Team, error) {
 	team := &Team{}
-	err := c.request("GET", fmt.Sprintf("/api/teams/%d", id), nil, nil, team)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/teams/%d", id), nil, nil, team)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +75,7 @@ func (c *Client) Team(id int64) (*Team, error) {
 // email arg is an optional value.
 // If you don't want to set email, please set "" (empty string).
 // When team creation is successful, returns the team ID.
-func (c *Client) AddTeam(name string, email string) (int64, error) {
+func (c *Client) AddTeam(ctx context.Context, name string, email string) (int64, error) {
 	id := int64(0)
 	path := "/api/teams"
 	team := Team{
@@ -90,7 +91,7 @@ func (c *Client) AddTeam(name string, email string) (int64, error) {
 		ID int64 `json:"teamId"`
 	}{}
 
-	err = c.request("POST", path, nil, bytes.NewBuffer(data), &tmp)
+	err = c.request(ctx, "POST", path, nil, bytes.NewBuffer(data), &tmp)
 	if err != nil {
 		return id, err
 	}
@@ -99,7 +100,7 @@ func (c *Client) AddTeam(name string, email string) (int64, error) {
 }
 
 // UpdateTeam updates a Grafana team.
-func (c *Client) UpdateTeam(id int64, name string, email string) error {
+func (c *Client) UpdateTeam(ctx context.Context, id int64, name string, email string) error {
 	path := fmt.Sprintf("/api/teams/%d", id)
 	team := Team{
 		Name: name,
@@ -113,18 +114,18 @@ func (c *Client) UpdateTeam(id int64, name string, email string) error {
 		return err
 	}
 
-	return c.request("PUT", path, nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "PUT", path, nil, bytes.NewBuffer(data), nil)
 }
 
 // DeleteTeam deletes the Grafana team whose ID it's passed.
-func (c *Client) DeleteTeam(id int64) error {
-	return c.request("DELETE", fmt.Sprintf("/api/teams/%d", id), nil, nil, nil)
+func (c *Client) DeleteTeam(ctx context.Context, id int64) error {
+	return c.request(ctx, "DELETE", fmt.Sprintf("/api/teams/%d", id), nil, nil, nil)
 }
 
 // TeamMembers fetches and returns the team members for the Grafana team whose ID it's passed.
-func (c *Client) TeamMembers(id int64) ([]*TeamMember, error) {
+func (c *Client) TeamMembers(ctx context.Context, id int64) ([]*TeamMember, error) {
 	members := make([]*TeamMember, 0)
-	err := c.request("GET", fmt.Sprintf("/api/teams/%d/members", id), nil, nil, &members)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/teams/%d/members", id), nil, nil, &members)
 	if err != nil {
 		return members, err
 	}
@@ -133,7 +134,7 @@ func (c *Client) TeamMembers(id int64) ([]*TeamMember, error) {
 }
 
 // AddTeamMember adds a user to the Grafana team whose ID it's passed.
-func (c *Client) AddTeamMember(id int64, userID int64) error {
+func (c *Client) AddTeamMember(ctx context.Context, id int64, userID int64) error {
 	path := fmt.Sprintf("/api/teams/%d/members", id)
 	member := TeamMember{UserID: userID}
 	data, err := json.Marshal(member)
@@ -141,20 +142,20 @@ func (c *Client) AddTeamMember(id int64, userID int64) error {
 		return err
 	}
 
-	return c.request("POST", path, nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "POST", path, nil, bytes.NewBuffer(data), nil)
 }
 
 // RemoveMemberFromTeam removes a user from the Grafana team whose ID it's passed.
-func (c *Client) RemoveMemberFromTeam(id int64, userID int64) error {
+func (c *Client) RemoveMemberFromTeam(ctx context.Context, id int64, userID int64) error {
 	path := fmt.Sprintf("/api/teams/%d/members/%d", id, userID)
 
-	return c.request("DELETE", path, nil, nil, nil)
+	return c.request(ctx, "DELETE", path, nil, nil, nil)
 }
 
 // TeamPreferences fetches and returns preferences for the Grafana team whose ID it's passed.
-func (c *Client) TeamPreferences(id int64) (*Preferences, error) {
+func (c *Client) TeamPreferences(ctx context.Context, id int64) (*Preferences, error) {
 	preferences := &Preferences{}
-	err := c.request("GET", fmt.Sprintf("/api/teams/%d/preferences", id), nil, nil, preferences)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/teams/%d/preferences", id), nil, nil, preferences)
 	if err != nil {
 		return nil, err
 	}
@@ -163,12 +164,12 @@ func (c *Client) TeamPreferences(id int64) (*Preferences, error) {
 }
 
 // UpdateTeamPreferences updates team preferences for the Grafana team whose ID it's passed.
-func (c *Client) UpdateTeamPreferences(id int64, preferences Preferences) error {
+func (c *Client) UpdateTeamPreferences(ctx context.Context, id int64, preferences Preferences) error {
 	path := fmt.Sprintf("/api/teams/%d/preferences", id)
 	data, err := json.Marshal(preferences)
 	if err != nil {
 		return err
 	}
 
-	return c.request("PUT", path, nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "PUT", path, nil, bytes.NewBuffer(data), nil)
 }

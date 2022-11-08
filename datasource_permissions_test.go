@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -43,7 +44,7 @@ func TestDatasourcePermissions(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getDatasourcePermissionsJSON)
 	defer server.Close()
 
-	resp, err := client.DatasourcePermissions(1)
+	resp, err := client.DatasourcePermissions(context.Background(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -94,7 +95,7 @@ func TestAddDatasourcePermissions(t *testing.T) {
 			Permission: 1,
 		},
 	} {
-		err := client.AddDatasourcePermission(1, item)
+		err := client.AddDatasourcePermission(context.Background(), 1, item)
 		if err != nil {
 			t.Error(err)
 		}

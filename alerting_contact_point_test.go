@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -11,7 +12,7 @@ func TestContactPoints(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getContactPointsJSON)
 		defer server.Close()
 
-		ps, err := client.ContactPoints()
+		ps, err := client.ContactPoints(context.Background())
 
 		if err != nil {
 			t.Error(err)
@@ -32,7 +33,7 @@ func TestContactPoints(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getContactPointsQueryJSON)
 		defer server.Close()
 
-		ps, err := client.ContactPointsByName("slack-receiver-1")
+		ps, err := client.ContactPointsByName(context.Background(), "slack-receiver-1")
 
 		if err != nil {
 			t.Error(err)
@@ -50,7 +51,7 @@ func TestContactPoints(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getContactPointsJSON)
 		defer server.Close()
 
-		p, err := client.ContactPoint("rc5r0bjnz")
+		p, err := client.ContactPoint(context.Background(), "rc5r0bjnz")
 
 		if err != nil {
 			t.Error(err)
@@ -65,7 +66,7 @@ func TestContactPoints(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getContactPointsJSON)
 		defer server.Close()
 
-		p, err := client.ContactPoint("does not exist")
+		p, err := client.ContactPoint(context.Background(), "does not exist")
 
 		if err == nil {
 			t.Errorf("expected error but got nil")
@@ -78,7 +79,7 @@ func TestContactPoints(t *testing.T) {
 		defer server.Close()
 		p := createContactPoint()
 
-		uid, err := client.NewContactPoint(&p)
+		uid, err := client.NewContactPoint(context.Background(), &p)
 
 		if err != nil {
 			t.Error(err)
@@ -94,7 +95,7 @@ func TestContactPoints(t *testing.T) {
 		p := createContactPoint()
 		p.UID = "on7otbj7k"
 
-		err := client.UpdateContactPoint(&p)
+		err := client.UpdateContactPoint(context.Background(), &p)
 
 		if err != nil {
 			t.Error(err)
@@ -105,7 +106,7 @@ func TestContactPoints(t *testing.T) {
 		server, client := gapiTestTools(t, 204, "")
 		defer server.Close()
 
-		err := client.DeleteContactPoint("rc5r0bjnz")
+		err := client.DeleteContactPoint(context.Background(), "rc5r0bjnz")
 
 		if err != nil {
 			t.Error(err)

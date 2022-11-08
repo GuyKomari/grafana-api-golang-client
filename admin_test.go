@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"strings"
 	"testing"
 
@@ -29,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 		Name:     "Administrator",
 		Password: "password",
 	}
-	resp, err := client.CreateUser(user)
+	resp, err := client.CreateUser(context.Background(), user)
 	if err != nil {
 		t.Error(err)
 	}
@@ -43,7 +44,7 @@ func TestDeleteUser(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deleteUserJSON)
 	defer server.Close()
 
-	err := client.DeleteUser(int64(1))
+	err := client.DeleteUser(context.Background(), int64(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -53,7 +54,7 @@ func TestUpdateUserPassword(t *testing.T) {
 	server, client := gapiTestTools(t, 200, updateUserPasswordJSON)
 	defer server.Close()
 
-	err := client.UpdateUserPassword(int64(1), "new-password")
+	err := client.UpdateUserPassword(context.Background(), int64(1), "new-password")
 	if err != nil {
 		t.Error(err)
 	}
@@ -63,7 +64,7 @@ func TestUpdateUserPermissions(t *testing.T) {
 	server, client := gapiTestTools(t, 200, updateUserPermissionsJSON)
 	defer server.Close()
 
-	err := client.UpdateUserPermissions(int64(1), false)
+	err := client.UpdateUserPermissions(context.Background(), int64(1), false)
 	if err != nil {
 		t.Error(err)
 	}
@@ -73,7 +74,7 @@ func TestPauseAllAlerts(t *testing.T) {
 	server, client := gapiTestTools(t, 200, pauseAllAlertsJSON)
 	defer server.Close()
 
-	res, err := client.PauseAllAlerts()
+	res, err := client.PauseAllAlerts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
@@ -89,7 +90,7 @@ func TestPauseAllAlerts_500(t *testing.T) {
 	server, client := gapiTestTools(t, 500, pauseAllAlertsJSON)
 	defer server.Close()
 
-	_, err := client.PauseAllAlerts()
+	_, err := client.PauseAllAlerts(context.Background())
 	if !strings.Contains(err.Error(), "status: 500") {
 		t.Errorf("expected error to contain 'status: 500'; got: %s", err.Error())
 	}

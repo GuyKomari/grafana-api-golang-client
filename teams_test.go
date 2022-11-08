@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -94,7 +95,7 @@ func TestSearchTeam(t *testing.T) {
 	defer server.Close()
 
 	query := "myteam"
-	resp, err := client.SearchTeam(query)
+	resp, err := client.SearchTeam(context.Background(), query)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,7 +130,7 @@ func TestTeam(t *testing.T) {
 	defer server.Close()
 
 	id := int64(1)
-	resp, err := client.Team(id)
+	resp, err := client.Team(context.Background(), id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -159,7 +160,7 @@ func TestAddTeam(t *testing.T) {
 	name := "TestTeam"
 	email := ""
 
-	id, err := client.AddTeam(name, email)
+	id, err := client.AddTeam(context.Background(), name, email)
 	if err != nil {
 		t.Error(err)
 	}
@@ -176,7 +177,7 @@ func TestUpdateTeam(t *testing.T) {
 	name := "TestTeam"
 	email := ""
 
-	err := client.UpdateTeam(id, name, email)
+	err := client.UpdateTeam(context.Background(), id, name, email)
 	if err != nil {
 		t.Error(err)
 	}
@@ -188,7 +189,7 @@ func TestDeleteTeam(t *testing.T) {
 
 	id := int64(1)
 
-	err := client.DeleteTeam(id)
+	err := client.DeleteTeam(context.Background(), id)
 	if err != nil {
 		t.Error(err)
 	}
@@ -200,7 +201,7 @@ func TestTeamMembers(t *testing.T) {
 
 	id := int64(1)
 
-	resp, err := client.TeamMembers(id)
+	resp, err := client.TeamMembers(context.Background(), id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -241,7 +242,7 @@ func TestAddTeamMember(t *testing.T) {
 	id := int64(1)
 	userID := int64(2)
 
-	if err := client.AddTeamMember(id, userID); err != nil {
+	if err := client.AddTeamMember(context.Background(), id, userID); err != nil {
 		t.Error(err)
 	}
 }
@@ -253,7 +254,7 @@ func TestRemoveMemberFromTeam(t *testing.T) {
 	id := int64(1)
 	userID := int64(2)
 
-	if err := client.RemoveMemberFromTeam(id, userID); err != nil {
+	if err := client.RemoveMemberFromTeam(context.Background(), id, userID); err != nil {
 		t.Error(err)
 	}
 }
@@ -264,7 +265,7 @@ func TestTeamPreferences(t *testing.T) {
 
 	id := int64(1)
 
-	resp, err := client.TeamPreferences(id)
+	resp, err := client.TeamPreferences(context.Background(), id)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -292,7 +293,7 @@ func TestUpdateTeamPreferences(t *testing.T) {
 		Timezone:        "",
 	}
 
-	if err := client.UpdateTeamPreferences(id, preferences); err != nil {
+	if err := client.UpdateTeamPreferences(context.Background(), id, preferences); err != nil {
 		t.Error(err)
 	}
 }

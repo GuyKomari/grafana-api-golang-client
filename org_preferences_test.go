@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 )
 
@@ -13,7 +14,7 @@ func TestOrgPreferences(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getOrgPreferencesJSON)
 	defer server.Close()
 
-	resp, err := client.OrgPreferences()
+	resp, err := client.OrgPreferences(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,7 +29,7 @@ func TestUpdateOrgPreferences(t *testing.T) {
 	server, client := gapiTestTools(t, 200, updateOrgPreferencesJSON)
 	defer server.Close()
 
-	resp, err := client.UpdateOrgPreferences(Preferences{
+	resp, err := client.UpdateOrgPreferences(context.Background(), Preferences{
 		Theme: "foo",
 	})
 	if err != nil {
@@ -45,7 +46,7 @@ func TestUpdateAllOrgPreference(t *testing.T) {
 	server, client := gapiTestTools(t, 200, updateOrgPreferencesJSON)
 	defer server.Close()
 
-	resp, err := client.UpdateAllOrgPreferences(Preferences{
+	resp, err := client.UpdateAllOrgPreferences(context.Background(), Preferences{
 		Theme: "foo",
 	})
 	if err != nil {

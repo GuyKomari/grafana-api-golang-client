@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -34,7 +35,7 @@ func TestTeamGroups(t *testing.T) {
 	defer server.Close()
 
 	teamID := int64(1)
-	teamGroups, err := client.TeamGroups(teamID)
+	teamGroups, err := client.TeamGroups(context.Background(), teamID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -53,7 +54,7 @@ func TestNewTeamGroup(t *testing.T) {
 	server, client := gapiTestTools(t, 200, createdTeamGroupJSON)
 	defer server.Close()
 
-	err := client.NewTeamGroup(int64(1), "test")
+	err := client.NewTeamGroup(context.Background(), int64(1), "test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,7 +64,7 @@ func TestDeleteTeamGroup(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deletedTeamGroupJSON)
 	defer server.Close()
 
-	err := client.DeleteTeamGroup(int64(1), "test")
+	err := client.DeleteTeamGroup(context.Background(), int64(1), "test")
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -41,9 +42,9 @@ type MonthRange string
 type YearRange string
 
 // MuteTimings fetches all mute timings.
-func (c *Client) MuteTimings() ([]MuteTiming, error) {
+func (c *Client) MuteTimings(ctx context.Context) ([]MuteTiming, error) {
 	mts := make([]MuteTiming, 0)
-	err := c.request("GET", "/api/v1/provisioning/mute-timings", nil, nil, &mts)
+	err := c.request(ctx, "GET", "/api/v1/provisioning/mute-timings", nil, nil, &mts)
 	if err != nil {
 		return nil, err
 	}
@@ -51,36 +52,36 @@ func (c *Client) MuteTimings() ([]MuteTiming, error) {
 }
 
 // MuteTiming fetches a single mute timing, identified by its name.
-func (c *Client) MuteTiming(name string) (MuteTiming, error) {
+func (c *Client) MuteTiming(ctx context.Context, name string) (MuteTiming, error) {
 	mt := MuteTiming{}
 	uri := fmt.Sprintf("/api/v1/provisioning/mute-timings/%s", name)
-	err := c.request("GET", uri, nil, nil, &mt)
+	err := c.request(ctx, "GET", uri, nil, nil, &mt)
 	return mt, err
 }
 
 // NewMuteTiming creates a new mute timing.
-func (c *Client) NewMuteTiming(mt *MuteTiming) error {
+func (c *Client) NewMuteTiming(ctx context.Context, mt *MuteTiming) error {
 	req, err := json.Marshal(mt)
 	if err != nil {
 		return err
 	}
 
-	return c.request("POST", "/api/v1/provisioning/mute-timings", nil, bytes.NewBuffer(req), nil)
+	return c.request(ctx, "POST", "/api/v1/provisioning/mute-timings", nil, bytes.NewBuffer(req), nil)
 }
 
 // UpdateMuteTiming updates a mute timing.
-func (c *Client) UpdateMuteTiming(mt *MuteTiming) error {
+func (c *Client) UpdateMuteTiming(ctx context.Context, mt *MuteTiming) error {
 	uri := fmt.Sprintf("/api/v1/provisioning/mute-timings/%s", mt.Name)
 	req, err := json.Marshal(mt)
 	if err != nil {
 		return err
 	}
 
-	return c.request("PUT", uri, nil, bytes.NewBuffer(req), nil)
+	return c.request(ctx, "PUT", uri, nil, bytes.NewBuffer(req), nil)
 }
 
 // DeleteMutetiming deletes a mute timing.
-func (c *Client) DeleteMuteTiming(name string) error {
+func (c *Client) DeleteMuteTiming(ctx context.Context, name string) error {
 	uri := fmt.Sprintf("/api/v1/provisioning/mute-timings/%s", name)
-	return c.request("DELETE", uri, nil, nil, nil)
+	return c.request(ctx, "DELETE", uri, nil, nil, nil)
 }

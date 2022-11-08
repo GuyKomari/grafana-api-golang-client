@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -18,9 +19,9 @@ type ContactPoint struct {
 }
 
 // ContactPoints fetches all contact points.
-func (c *Client) ContactPoints() ([]ContactPoint, error) {
+func (c *Client) ContactPoints(ctx context.Context) ([]ContactPoint, error) {
 	ps := make([]ContactPoint, 0)
-	err := c.request("GET", "/api/v1/provisioning/contact-points", nil, nil, &ps)
+	err := c.request(ctx, "GET", "/api/v1/provisioning/contact-points", nil, nil, &ps)
 	if err != nil {
 		return nil, err
 	}
@@ -28,11 +29,11 @@ func (c *Client) ContactPoints() ([]ContactPoint, error) {
 }
 
 // ContactPointsByName fetches contact points with the given name.
-func (c *Client) ContactPointsByName(name string) ([]ContactPoint, error) {
+func (c *Client) ContactPointsByName(ctx context.Context, name string) ([]ContactPoint, error) {
 	ps := make([]ContactPoint, 0)
 	params := url.Values{}
 	params.Add("name", name)
-	err := c.request("GET", "/api/v1/provisioning/contact-points", params, nil, &ps)
+	err := c.request(ctx, "GET", "/api/v1/provisioning/contact-points", params, nil, &ps)
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +41,8 @@ func (c *Client) ContactPointsByName(name string) ([]ContactPoint, error) {
 }
 
 // ContactPoint fetches a single contact point, identified by its UID.
-func (c *Client) ContactPoint(uid string) (ContactPoint, error) {
-	ps, err := c.ContactPoints()
+func (c *Client) ContactPoint(ctx context.Context, uid string) (ContactPoint, error) {
+	ps, err := c.ContactPoints(ctx)
 	if err != nil {
 		return ContactPoint{}, err
 	}
@@ -55,14 +56,14 @@ func (c *Client) ContactPoint(uid string) (ContactPoint, error) {
 }
 
 // NewContactPoint creates a new contact point.
-func (c *Client) NewContactPoint(p *ContactPoint) (string, error) {
+func (c *Client) NewContactPoint(ctx context.Context, p *ContactPoint) (string, error) {
 	req, err := json.Marshal(p)
 	if err != nil {
 		return "", err
 	}
 	result := ContactPoint{}
 
-	err = c.request("POST", "/api/v1/provisioning/contact-points", nil, bytes.NewBuffer(req), &result)
+	err = c.request(ctx, "POST", "/api/v1/provisioning/contact-points", nil, bytes.NewBuffer(req), &result)
 	if err != nil {
 		return "", err
 	}
@@ -70,18 +71,18 @@ func (c *Client) NewContactPoint(p *ContactPoint) (string, error) {
 }
 
 // UpdateContactPoint replaces a contact point, identified by contact point's UID.
-func (c *Client) UpdateContactPoint(p *ContactPoint) error {
+func (c *Client) UpdateContactPoint(ctx context.Context, p *ContactPoint) error {
 	uri := fmt.Sprintf("/api/v1/provisioning/contact-points/%s", p.UID)
 	req, err := json.Marshal(p)
 	if err != nil {
 		return err
 	}
 
-	return c.request("PUT", uri, nil, bytes.NewBuffer(req), nil)
+	return c.request(ctx, "PUT", uri, nil, bytes.NewBuffer(req), nil)
 }
 
 // DeleteContactPoint deletes a contact point.
-func (c *Client) DeleteContactPoint(uid string) error {
+func (c *Client) DeleteContactPoint(ctx context.Context, uid string) error {
 	uri := fmt.Sprintf("/api/v1/provisioning/contact-points/%s", uid)
-	return c.request("DELETE", uri, nil, nil, nil)
+	return c.request(ctx, "DELETE", uri, nil, nil, nil)
 }

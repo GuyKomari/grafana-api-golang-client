@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -35,7 +36,7 @@ func TestCreateAPIKey(t *testing.T) {
 		SecondsToLive: 0,
 	}
 
-	res, err := client.CreateAPIKey(req)
+	res, err := client.CreateAPIKey(context.Background(), req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -47,7 +48,7 @@ func TestDeleteAPIKey(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deleteAPIKeyJSON)
 	defer server.Close()
 
-	res, err := client.DeleteAPIKey(int64(1))
+	res, err := client.DeleteAPIKey(context.Background(), int64(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -59,7 +60,7 @@ func TestGetAPIKeys(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getAPIKeysJSON)
 	defer server.Close()
 
-	res, err := client.GetAPIKeys(true)
+	res, err := client.GetAPIKeys(context.Background(), true)
 	if err != nil {
 		t.Error(err)
 	}

@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -42,28 +43,28 @@ type DatasourcePermissionAddPayload struct {
 }
 
 // EnableDatasourcePermissions enables the datasource permissions (this is a datasource setting)
-func (c *Client) EnableDatasourcePermissions(id int64) error {
+func (c *Client) EnableDatasourcePermissions(ctx context.Context, id int64) error {
 	path := fmt.Sprintf("/api/datasources/%d/enable-permissions", id)
-	if err := c.request("POST", path, nil, nil, nil); err != nil {
+	if err := c.request(ctx, "POST", path, nil, nil, nil); err != nil {
 		return fmt.Errorf("error enabling permissions at %s: %w", path, err)
 	}
 	return nil
 }
 
 // DisableDatasourcePermissions disables the datasource permissions (this is a datasource setting)
-func (c *Client) DisableDatasourcePermissions(id int64) error {
+func (c *Client) DisableDatasourcePermissions(ctx context.Context, id int64) error {
 	path := fmt.Sprintf("/api/datasources/%d/disable-permissions", id)
-	if err := c.request("POST", path, nil, nil, nil); err != nil {
+	if err := c.request(ctx, "POST", path, nil, nil, nil); err != nil {
 		return fmt.Errorf("error disabling permissions at %s: %w", path, err)
 	}
 	return nil
 }
 
 // DatasourcePermissions fetches and returns the permissions for the datasource whose ID it's passed.
-func (c *Client) DatasourcePermissions(id int64) (*DatasourcePermissionsResponse, error) {
+func (c *Client) DatasourcePermissions(ctx context.Context, id int64) (*DatasourcePermissionsResponse, error) {
 	path := fmt.Sprintf("/api/datasources/%d/permissions", id)
 	var out *DatasourcePermissionsResponse
-	err := c.request("GET", path, nil, nil, &out)
+	err := c.request(ctx, "GET", path, nil, nil, &out)
 	if err != nil {
 		return out, fmt.Errorf("error getting permissions at %s: %w", path, err)
 	}
@@ -72,14 +73,14 @@ func (c *Client) DatasourcePermissions(id int64) (*DatasourcePermissionsResponse
 }
 
 // AddDatasourcePermission adds the given permission item
-func (c *Client) AddDatasourcePermission(id int64, item *DatasourcePermissionAddPayload) error {
+func (c *Client) AddDatasourcePermission(ctx context.Context, id int64, item *DatasourcePermissionAddPayload) error {
 	path := fmt.Sprintf("/api/datasources/%d/permissions", id)
 	data, err := json.Marshal(item)
 	if err != nil {
 		return fmt.Errorf("marshal err: %w", err)
 	}
 
-	if err = c.request("POST", path, nil, bytes.NewBuffer(data), nil); err != nil {
+	if err = c.request(ctx, "POST", path, nil, bytes.NewBuffer(data), nil); err != nil {
 		return fmt.Errorf("error adding permissions at %s: %w", path, err)
 	}
 
@@ -87,9 +88,9 @@ func (c *Client) AddDatasourcePermission(id int64, item *DatasourcePermissionAdd
 }
 
 // RemoveDatasourcePermission removes the permission with the given id
-func (c *Client) RemoveDatasourcePermission(id, permissionID int64) error {
+func (c *Client) RemoveDatasourcePermission(ctx context.Context, id, permissionID int64) error {
 	path := fmt.Sprintf("/api/datasources/%d/permissions/%d", id, permissionID)
-	if err := c.request("DELETE", path, nil, nil, nil); err != nil {
+	if err := c.request(ctx, "DELETE", path, nil, nil, nil); err != nil {
 		return fmt.Errorf("error deleting permissions at %s: %w", path, err)
 	}
 

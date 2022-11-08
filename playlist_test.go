@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 )
 
@@ -50,7 +51,7 @@ func TestPlaylistCreateAndUpdate(t *testing.T) {
 	}
 
 	// create
-	id, err := client.NewPlaylist(playlist)
+	id, err := client.NewPlaylist(context.Background(), playlist)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,7 +68,7 @@ func TestPlaylistCreateAndUpdate(t *testing.T) {
 		Title: "my dashboard",
 	})
 
-	err = client.UpdatePlaylist(playlist)
+	err = client.UpdatePlaylist(context.Background(), playlist)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +78,7 @@ func TestGetPlaylist(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getPlaylistResponse)
 	defer server.Close()
 
-	playlist, err := client.Playlist("2")
+	playlist, err := client.Playlist(context.Background(), "2")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +96,7 @@ func TestDeletePlaylist(t *testing.T) {
 	server, client := gapiTestTools(t, 200, "")
 	defer server.Close()
 
-	err := client.DeletePlaylist("1")
+	err := client.DeletePlaylist(context.Background(), "1")
 	if err != nil {
 		t.Fatal(err)
 	}

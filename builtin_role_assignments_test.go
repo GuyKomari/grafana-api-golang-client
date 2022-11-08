@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 )
 
@@ -52,7 +53,7 @@ func TestNewBuiltInRoleAssignment(t *testing.T) {
 		BuiltinRole: "Viewer",
 	}
 
-	_, err := client.NewBuiltInRoleAssignment(br)
+	_, err := client.NewBuiltInRoleAssignment(context.Background(), br)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +65,7 @@ func TestGetBuiltInRoleAssignments(t *testing.T) {
 		server.Close()
 	})
 
-	resp, err := client.GetBuiltInRoleAssignments()
+	resp, err := client.GetBuiltInRoleAssignments(context.Background())
 
 	if err != nil {
 		t.Error(err)
@@ -107,7 +108,7 @@ func TestDeleteBuiltInRoleAssignment(t *testing.T) {
 		RoleUID:     "test:policy",
 		BuiltinRole: "Viewer",
 	}
-	err := client.DeleteBuiltInRoleAssignment(br)
+	err := client.DeleteBuiltInRoleAssignment(context.Background(), br)
 	if err != nil {
 		t.Error(err)
 	}

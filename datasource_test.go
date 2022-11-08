@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -44,7 +45,7 @@ func TestNewDataSource(t *testing.T) {
 		SecureJSONData: sjd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +79,7 @@ func TestNewPrometheusDataSource(t *testing.T) {
 		JSONData:  jd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,7 +122,7 @@ func TestNewPrometheusSigV4DataSource(t *testing.T) {
 		SecureJSONData: sjd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +158,7 @@ func TestNewElasticsearchDataSource(t *testing.T) {
 		JSONData:  jd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -198,7 +199,7 @@ func TestNewInfluxDBDataSource(t *testing.T) {
 		SecureJSONData: sjd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -231,7 +232,7 @@ func TestNewOpenTSDBDataSource(t *testing.T) {
 		JSONData:  jd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -273,7 +274,7 @@ func TestNewAzureDataSource(t *testing.T) {
 		SecureJSONData: sjd,
 	}
 
-	created, err := client.NewDataSource(ds)
+	created, err := client.NewDataSource(context.Background(), ds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -289,7 +290,7 @@ func TestDataSources(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getDataSourcesJSON)
 	defer server.Close()
 
-	datasources, err := client.DataSources()
+	datasources, err := client.DataSources(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -308,7 +309,7 @@ func TestDataSourceIDByName(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getDataSourceJSON)
 	defer server.Close()
 
-	datasourceID, err := client.DataSourceIDByName("foo")
+	datasourceID, err := client.DataSourceIDByName(context.Background(), "foo")
 	if err != nil {
 		t.Fatal(err)
 	}

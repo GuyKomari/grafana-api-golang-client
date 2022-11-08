@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -88,7 +89,7 @@ func TestFolders(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getFoldersJSON)
 	defer server.Close()
 
-	folders, err := client.Folders()
+	folders, err := client.Folders(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -108,7 +109,7 @@ func TestFolder(t *testing.T) {
 	defer server.Close()
 
 	folder := int64(1)
-	resp, err := client.Folder(folder)
+	resp, err := client.Folder(context.Background(), folder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -125,7 +126,7 @@ func TestFolderByUid(t *testing.T) {
 	defer server.Close()
 
 	folder := "nErXDvCkzz"
-	resp, err := client.FolderByUID(folder)
+	resp, err := client.FolderByUID(context.Background(), folder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +142,7 @@ func TestNewFolder(t *testing.T) {
 	server, client := gapiTestTools(t, 200, createdFolderJSON)
 	defer server.Close()
 
-	resp, err := client.NewFolder("test-folder")
+	resp, err := client.NewFolder(context.Background(), "test-folder")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +158,7 @@ func TestUpdateFolder(t *testing.T) {
 	server, client := gapiTestTools(t, 200, updatedFolderJSON)
 	defer server.Close()
 
-	err := client.UpdateFolder("nErXDvCkzz", "test-folder")
+	err := client.UpdateFolder(context.Background(), "nErXDvCkzz", "test-folder")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -167,7 +168,7 @@ func TestDeleteFolder(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deletedFolderJSON)
 	defer server.Close()
 
-	err := client.DeleteFolder("nErXDvCkzz")
+	err := client.DeleteFolder(context.Background(), "nErXDvCkzz")
 	if err != nil {
 		t.Fatal(err)
 	}

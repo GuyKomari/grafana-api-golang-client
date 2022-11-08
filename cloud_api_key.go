@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -23,23 +24,23 @@ type CloudAPIKey struct {
 	Expiration string
 }
 
-func (c *Client) CreateCloudAPIKey(org string, input *CreateCloudAPIKeyInput) (*CloudAPIKey, error) {
+func (c *Client) CreateCloudAPIKey(ctx context.Context, org string, input *CreateCloudAPIKeyInput) (*CloudAPIKey, error) {
 	resp := CloudAPIKey{}
 	data, err := json.Marshal(input)
 	if err != nil {
 		return nil, err
 	}
 
-	err = c.request("POST", fmt.Sprintf("/api/orgs/%s/api-keys", org), nil, bytes.NewBuffer(data), &resp)
+	err = c.request(ctx, "POST", fmt.Sprintf("/api/orgs/%s/api-keys", org), nil, bytes.NewBuffer(data), &resp)
 	return &resp, err
 }
 
-func (c *Client) ListCloudAPIKeys(org string) (*ListCloudAPIKeysOutput, error) {
+func (c *Client) ListCloudAPIKeys(ctx context.Context, org string) (*ListCloudAPIKeysOutput, error) {
 	resp := &ListCloudAPIKeysOutput{}
-	err := c.request("GET", fmt.Sprintf("/api/orgs/%s/api-keys", org), nil, nil, &resp)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/orgs/%s/api-keys", org), nil, nil, &resp)
 	return resp, err
 }
 
-func (c *Client) DeleteCloudAPIKey(org string, keyName string) error {
-	return c.request("DELETE", fmt.Sprintf("/api/orgs/%s/api-keys/%s", org, keyName), nil, nil, nil)
+func (c *Client) DeleteCloudAPIKey(ctx context.Context, org string, keyName string) error {
+	return c.request(ctx, "DELETE", fmt.Sprintf("/api/orgs/%s/api-keys/%s", org, keyName), nil, nil, nil)
 }

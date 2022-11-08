@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -18,7 +19,7 @@ func TestOrgs(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getOrgsJSON)
 	defer server.Close()
 
-	orgs, err := client.Orgs()
+	orgs, err := client.Orgs(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +39,7 @@ func TestOrgByName(t *testing.T) {
 	defer server.Close()
 
 	org := "Main Org."
-	resp, err := client.OrgByName(org)
+	resp, err := client.OrgByName(context.Background(), org)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +56,7 @@ func TestOrg(t *testing.T) {
 	defer server.Close()
 
 	org := int64(1)
-	resp, err := client.Org(org)
+	resp, err := client.Org(context.Background(), org)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func TestNewOrg(t *testing.T) {
 	server, client := gapiTestTools(t, 200, createdOrgJSON)
 	defer server.Close()
 
-	resp, err := client.NewOrg("test-org")
+	resp, err := client.NewOrg(context.Background(), "test-org")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +88,7 @@ func TestUpdateOrg(t *testing.T) {
 	server, client := gapiTestTools(t, 200, updatedOrgJSON)
 	defer server.Close()
 
-	err := client.UpdateOrg(int64(1), "test-org")
+	err := client.UpdateOrg(context.Background(), int64(1), "test-org")
 	if err != nil {
 		t.Error(err)
 	}
@@ -97,7 +98,7 @@ func TestDeleteOrg(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deletedOrgJSON)
 	defer server.Close()
 
-	err := client.DeleteOrg(int64(1))
+	err := client.DeleteOrg(context.Background(), int64(1))
 	if err != nil {
 		t.Error(err)
 	}

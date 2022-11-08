@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -164,7 +165,7 @@ func TestLibraryPanelCreate(t *testing.T) {
 		Model:  map[string]interface{}{"description": "", "type": ""},
 	}
 
-	resp, err := client.NewLibraryPanel(panel)
+	resp, err := client.NewLibraryPanel(context.Background(), panel)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +178,7 @@ func TestLibraryPanelCreate(t *testing.T) {
 
 	for _, code := range []int{400, 401, 403} {
 		server.code = code
-		_, err = client.NewLibraryPanel(panel)
+		_, err = client.NewLibraryPanel(context.Background(), panel)
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -188,7 +189,7 @@ func TestLibraryPanelGetByName(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getLibraryPanelNameResponse)
 	defer server.Close()
 
-	resp, err := client.LibraryPanelByName("API docs Example")
+	resp, err := client.LibraryPanelByName(context.Background(), "API docs Example")
 	if err != nil {
 		t.Error(err)
 	}
@@ -198,7 +199,7 @@ func TestLibraryPanelGetByName(t *testing.T) {
 
 	for _, code := range []int{401, 403, 404} {
 		server.code = code
-		_, err = client.LibraryPanelByName("test")
+		_, err = client.LibraryPanelByName(context.Background(), "test")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -209,7 +210,7 @@ func TestLibraryPanelGetByUID(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getLibraryPanelUIDResponse)
 	defer server.Close()
 
-	resp, err := client.LibraryPanelByUID("V--OrYHnz")
+	resp, err := client.LibraryPanelByUID(context.Background(), "V--OrYHnz")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -219,7 +220,7 @@ func TestLibraryPanelGetByUID(t *testing.T) {
 
 	for _, code := range []int{401, 403, 404} {
 		server.code = code
-		_, err = client.LibraryPanelByUID("V--OrYHnz")
+		_, err = client.LibraryPanelByUID(context.Background(), "V--OrYHnz")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -235,7 +236,7 @@ func TestPatchLibraryPanel(t *testing.T) {
 		Name:   "Updated library panel name",
 		Model:  map[string]interface{}{"description": "new description", "type": ""},
 	}
-	resp, err := client.PatchLibraryPanel("V--OrYHnz", panel)
+	resp, err := client.PatchLibraryPanel(context.Background(), "V--OrYHnz", panel)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -250,7 +251,7 @@ func TestPatchLibraryPanel(t *testing.T) {
 	for _, code := range []int{401, 403, 404} {
 		server.code = code
 
-		_, err := client.LibraryPanelByUID("V--OrYHnz")
+		_, err := client.LibraryPanelByUID(context.Background(), "V--OrYHnz")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -261,7 +262,7 @@ func TestLibraryPanelGetConnections(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getLibraryPanelConnectionsResponse)
 	defer server.Close()
 
-	resp, err := client.LibraryPanelConnections("V--OrYHnz")
+	resp, err := client.LibraryPanelConnections(context.Background(), "V--OrYHnz")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -275,7 +276,7 @@ func TestLibraryPanelConnectedDashboards(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getLibraryPanelConnectionsResponse)
 	defer server.Close()
 
-	connections, err := client.LibraryPanelConnections("V--OrYHnz")
+	connections, err := client.LibraryPanelConnections(context.Background(), "V--OrYHnz")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -286,7 +287,7 @@ func TestLibraryPanelConnectedDashboards(t *testing.T) {
 	}
 
 	_, client = gapiTestTools(t, 200, getLibraryPanelConnectedDashboardsResponse)
-	dashboards, err := client.DashboardsByIDs(dashboardIds)
+	dashboards, err := client.DashboardsByIDs(context.Background(), dashboardIds)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -300,7 +301,7 @@ func TestLibraryPanelDelete(t *testing.T) {
 	server, client := gapiTestTools(t, 200, deleteLibraryPanelResponse)
 	defer server.Close()
 
-	resp, err := client.DeleteLibraryPanel("V--OrYHnz")
+	resp, err := client.DeleteLibraryPanel(context.Background(), "V--OrYHnz")
 	if err != nil {
 		t.Fatal(err)
 	}

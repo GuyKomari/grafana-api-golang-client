@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -61,7 +62,7 @@ func TestFolderPermissions(t *testing.T) {
 	defer server.Close()
 
 	fid := "nErXDvCkzz"
-	resp, err := client.FolderPermissions(fid)
+	resp, err := client.FolderPermissions(context.Background(), fid)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -128,7 +129,7 @@ func TestUpdateFolderPermissions(t *testing.T) {
 			},
 		},
 	}
-	err := client.UpdateFolderPermissions("nErXDvCkzz", items)
+	err := client.UpdateFolderPermissions(context.Background(), "nErXDvCkzz", items)
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"net/url"
 	"testing"
 )
@@ -50,7 +51,7 @@ const (
 func TestFolderDashboardSearch(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getFolderDashboardSearchResponse)
 	defer server.Close()
-	resp, err := client.FolderDashboardSearch(url.Values{})
+	resp, err := client.FolderDashboardSearch(context.Background(), url.Values{})
 	if err != nil {
 		t.Fatal(err)
 	}

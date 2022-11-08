@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -11,7 +12,7 @@ func TestMessageTemplates(t *testing.T) {
 		server, client := gapiTestTools(t, 200, getMessageTemplatesJSON)
 		defer server.Close()
 
-		ts, err := client.MessageTemplates()
+		ts, err := client.MessageTemplates(context.Background())
 
 		if err != nil {
 			t.Error(err)
@@ -32,7 +33,7 @@ func TestMessageTemplates(t *testing.T) {
 		server, client := gapiTestTools(t, 200, messageTemplateJSON)
 		defer server.Close()
 
-		tmpl, err := client.MessageTemplate("template-one")
+		tmpl, err := client.MessageTemplate(context.Background(), "template-one")
 
 		if err != nil {
 			t.Error(err)
@@ -47,7 +48,7 @@ func TestMessageTemplates(t *testing.T) {
 		server, client := gapiTestTools(t, 404, ``)
 		defer server.Close()
 
-		tmpl, err := client.MessageTemplate("does not exist")
+		tmpl, err := client.MessageTemplate(context.Background(), "does not exist")
 
 		if err == nil {
 			t.Errorf("expected error but got nil")
@@ -59,7 +60,7 @@ func TestMessageTemplates(t *testing.T) {
 		server, client := gapiTestTools(t, 202, messageTemplateJSON)
 		defer server.Close()
 
-		err := client.SetMessageTemplate("template-three", "{{define \"template-one\" }}\n  content three\n{{ end }}")
+		err := client.SetMessageTemplate(context.Background(), "template-three", "{{define \"template-one\" }}\n  content three\n{{ end }}")
 
 		if err != nil {
 			t.Error(err)
@@ -70,7 +71,7 @@ func TestMessageTemplates(t *testing.T) {
 		server, client := gapiTestTools(t, 204, ``)
 		defer server.Close()
 
-		err := client.DeleteMessageTemplate("template-three")
+		err := client.DeleteMessageTemplate(context.Background(), "template-three")
 
 		if err != nil {
 			t.Error(err)

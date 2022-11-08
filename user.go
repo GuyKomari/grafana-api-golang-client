@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -45,30 +46,30 @@ type UserSearch struct {
 }
 
 // Users fetches and returns Grafana users.
-func (c *Client) Users() (users []UserSearch, err error) {
-	err = c.request("GET", "/api/users", nil, nil, &users)
+func (c *Client) Users(ctx context.Context) (users []UserSearch, err error) {
+	err = c.request(ctx, "GET", "/api/users", nil, nil, &users)
 	return
 }
 
 // User fetches a user by ID.
-func (c *Client) User(id int64) (user User, err error) {
-	err = c.request("GET", fmt.Sprintf("/api/users/%d", id), nil, nil, &user)
+func (c *Client) User(ctx context.Context, id int64) (user User, err error) {
+	err = c.request(ctx, "GET", fmt.Sprintf("/api/users/%d", id), nil, nil, &user)
 	return
 }
 
 // UserByEmail fetches a user by email address.
-func (c *Client) UserByEmail(email string) (user User, err error) {
+func (c *Client) UserByEmail(ctx context.Context, email string) (user User, err error) {
 	query := url.Values{}
 	query.Add("loginOrEmail", email)
-	err = c.request("GET", "/api/users/lookup", query, nil, &user)
+	err = c.request(ctx, "GET", "/api/users/lookup", query, nil, &user)
 	return
 }
 
 // UserUpdate updates a user by ID.
-func (c *Client) UserUpdate(u User) error {
+func (c *Client) UserUpdate(ctx context.Context, u User) error {
 	data, err := json.Marshal(u)
 	if err != nil {
 		return err
 	}
-	return c.request("PUT", fmt.Sprintf("/api/users/%d", u.ID), nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "PUT", fmt.Sprintf("/api/users/%d", u.ID), nil, bytes.NewBuffer(data), nil)
 }

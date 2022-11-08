@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -15,9 +16,9 @@ type BuiltInRoleAssignment struct {
 }
 
 // GetBuiltInRoleAssignments gets all built-in role assignments. Available only in Grafana Enterprise 8.+.
-func (c *Client) GetBuiltInRoleAssignments() (map[string][]*Role, error) {
+func (c *Client) GetBuiltInRoleAssignments(ctx context.Context) (map[string][]*Role, error) {
 	br := make(map[string][]*Role)
-	err := c.request("GET", baseURL, nil, nil, &br)
+	err := c.request(ctx, "GET", baseURL, nil, nil, &br)
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +26,7 @@ func (c *Client) GetBuiltInRoleAssignments() (map[string][]*Role, error) {
 }
 
 // NewBuiltInRoleAssignment creates a new built-in role assignment. Available only in Grafana Enterprise 8.+.
-func (c *Client) NewBuiltInRoleAssignment(builtInRoleAssignment BuiltInRoleAssignment) (*BuiltInRoleAssignment, error) {
+func (c *Client) NewBuiltInRoleAssignment(ctx context.Context, builtInRoleAssignment BuiltInRoleAssignment) (*BuiltInRoleAssignment, error) {
 	body, err := json.Marshal(builtInRoleAssignment)
 	if err != nil {
 		return nil, err
@@ -33,7 +34,7 @@ func (c *Client) NewBuiltInRoleAssignment(builtInRoleAssignment BuiltInRoleAssig
 
 	br := &BuiltInRoleAssignment{}
 
-	err = c.request("POST", baseURL, nil, bytes.NewBuffer(body), &br)
+	err = c.request(ctx, "POST", baseURL, nil, bytes.NewBuffer(body), &br)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +43,7 @@ func (c *Client) NewBuiltInRoleAssignment(builtInRoleAssignment BuiltInRoleAssig
 }
 
 // DeleteBuiltInRoleAssignment remove the built-in role assignments. Available only in Grafana Enterprise 8.+.
-func (c *Client) DeleteBuiltInRoleAssignment(builtInRole BuiltInRoleAssignment) error {
+func (c *Client) DeleteBuiltInRoleAssignment(ctx context.Context, builtInRole BuiltInRoleAssignment) error {
 	data, err := json.Marshal(builtInRole)
 	if err != nil {
 		return err
@@ -52,7 +53,7 @@ func (c *Client) DeleteBuiltInRoleAssignment(builtInRole BuiltInRoleAssignment) 
 		"global": {fmt.Sprint(builtInRole.Global)},
 	}
 	url := fmt.Sprintf("%s/%s/roles/%s", baseURL, builtInRole.BuiltinRole, builtInRole.RoleUID)
-	err = c.request("DELETE", url, qp, bytes.NewBuffer(data), nil)
+	err = c.request(ctx, "DELETE", url, qp, bytes.NewBuffer(data), nil)
 
 	return err
 }

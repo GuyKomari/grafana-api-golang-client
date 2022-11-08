@@ -1,6 +1,9 @@
 package gapi
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 var (
 	cloudRegionResponse = `{
@@ -94,7 +97,7 @@ func TestCloudRegions(t *testing.T) {
 	server, client := gapiTestTools(t, 200, cloudRegionsResponse)
 	defer server.Close()
 
-	regions, err := client.GetCloudRegions()
+	regions, err := client.GetCloudRegions(context.Background())
 
 	if err != nil {
 		t.Fatalf("expected error to be nil; got: %s", err.Error())
@@ -114,7 +117,7 @@ func TestCloudRegionBySlug(t *testing.T) {
 	server, client := gapiTestTools(t, 200, cloudRegionResponse)
 	defer server.Close()
 
-	resp, err := client.GetCloudRegionBySlug("us")
+	resp, err := client.GetCloudRegionBySlug(context.Background(), "us")
 	if err != nil {
 		t.Fatal(err)
 	}

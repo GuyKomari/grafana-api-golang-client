@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,17 +15,17 @@ type RoleAssignments struct {
 	ServiceAccounts []int  `json:"service_accounts,omitempty"`
 }
 
-func (c *Client) GetRoleAssignments(uid string) (*RoleAssignments, error) {
+func (c *Client) GetRoleAssignments(ctx context.Context, uid string) (*RoleAssignments, error) {
 	assignments := &RoleAssignments{}
 	url := fmt.Sprintf("/api/access-control/roles/%s/assignments", uid)
-	if err := c.request(http.MethodGet, url, nil, nil, assignments); err != nil {
+	if err := c.request(ctx, http.MethodGet, url, nil, nil, assignments); err != nil {
 		return nil, err
 	}
 
 	return assignments, nil
 }
 
-func (c *Client) UpdateRoleAssignments(ra *RoleAssignments) (*RoleAssignments, error) {
+func (c *Client) UpdateRoleAssignments(ctx context.Context, ra *RoleAssignments) (*RoleAssignments, error) {
 	response := &RoleAssignments{}
 
 	data, err := json.Marshal(ra)
@@ -33,7 +34,7 @@ func (c *Client) UpdateRoleAssignments(ra *RoleAssignments) (*RoleAssignments, e
 	}
 
 	url := fmt.Sprintf("/api/access-control/roles/%s/assignments", ra.RoleUID)
-	err = c.request(http.MethodPut, url, nil, bytes.NewBuffer(data), &response)
+	err = c.request(ctx, http.MethodPut, url, nil, bytes.NewBuffer(data), &response)
 	if err != nil {
 		return nil, err
 	}

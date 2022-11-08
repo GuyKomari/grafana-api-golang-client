@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -17,7 +18,7 @@ func TestOrgUsersCurrent(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getOrgUsersJSON)
 	defer server.Close()
 
-	resp, err := client.OrgUsersCurrent()
+	resp, err := client.OrgUsersCurrent(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -40,7 +41,7 @@ func TestOrgUsers(t *testing.T) {
 	defer server.Close()
 
 	org := int64(1)
-	resp, err := client.OrgUsers(org)
+	resp, err := client.OrgUsers(context.Background(), org)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +67,7 @@ func TestAddOrgUser(t *testing.T) {
 
 	orgID, user, role := int64(1), "admin@localhost", "Admin"
 
-	err := client.AddOrgUser(orgID, user, role)
+	err := client.AddOrgUser(context.Background(), orgID, user, role)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +79,7 @@ func TestUpdateOrgUser(t *testing.T) {
 
 	orgID, userID, role := int64(1), int64(1), "Editor"
 
-	err := client.UpdateOrgUser(orgID, userID, role)
+	err := client.UpdateOrgUser(context.Background(), orgID, userID, role)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,7 +91,7 @@ func TestRemoveOrgUser(t *testing.T) {
 
 	orgID, userID := int64(1), int64(1)
 
-	err := client.RemoveOrgUser(orgID, userID)
+	err := client.RemoveOrgUser(context.Background(), orgID, userID)
 	if err != nil {
 		t.Error(err)
 	}

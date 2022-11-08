@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -60,7 +61,7 @@ func TestDashboardPermissions(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getDashboardPermissionsJSON)
 	defer server.Close()
 
-	resp, err := client.DashboardPermissions(1)
+	resp, err := client.DashboardPermissions(context.Background(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -133,7 +134,7 @@ func TestUpdateDashboardPermissions(t *testing.T) {
 			},
 		},
 	}
-	err := client.UpdateDashboardPermissions(1, items)
+	err := client.UpdateDashboardPermissions(context.Background(), 1, items)
 	if err != nil {
 		t.Error(err)
 	}

@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -14,9 +15,9 @@ type TeamGroup struct {
 }
 
 // TeamGroups fetches and returns the list of Grafana team group whose Team ID it's passed.
-func (c *Client) TeamGroups(id int64) ([]TeamGroup, error) {
+func (c *Client) TeamGroups(ctx context.Context, id int64) ([]TeamGroup, error) {
 	teamGroups := make([]TeamGroup, 0)
-	err := c.request("GET", fmt.Sprintf("/api/teams/%d/groups", id), nil, nil, &teamGroups)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/teams/%d/groups", id), nil, nil, &teamGroups)
 	if err != nil {
 		return teamGroups, err
 	}
@@ -25,7 +26,7 @@ func (c *Client) TeamGroups(id int64) ([]TeamGroup, error) {
 }
 
 // NewTeamGroup creates a new Grafana Team Group .
-func (c *Client) NewTeamGroup(id int64, groupID string) error {
+func (c *Client) NewTeamGroup(ctx context.Context, id int64, groupID string) error {
 	dataMap := map[string]string{
 		"groupId": groupID,
 	}
@@ -34,10 +35,10 @@ func (c *Client) NewTeamGroup(id int64, groupID string) error {
 		return err
 	}
 
-	return c.request("POST", fmt.Sprintf("/api/teams/%d/groups", id), nil, bytes.NewBuffer(data), nil)
+	return c.request(ctx, "POST", fmt.Sprintf("/api/teams/%d/groups", id), nil, bytes.NewBuffer(data), nil)
 }
 
 // DeleteTeam deletes the Grafana team whose ID it's passed.
-func (c *Client) DeleteTeamGroup(id int64, groupID string) error {
-	return c.request("DELETE", fmt.Sprintf("/api/teams/%d/groups/%s", id, groupID), nil, nil, nil)
+func (c *Client) DeleteTeamGroup(ctx context.Context, id int64, groupID string) error {
+	return c.request(ctx, "DELETE", fmt.Sprintf("/api/teams/%d/groups/%s", id, groupID), nil, nil, nil)
 }

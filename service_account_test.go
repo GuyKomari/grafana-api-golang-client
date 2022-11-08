@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"net/http"
 	"testing"
 
@@ -86,7 +87,7 @@ func TestCreateServiceAccountToken(t *testing.T) {
 		SecondsToLive: 0,
 	}
 
-	res, err := client.CreateServiceAccountToken(req)
+	res, err := client.CreateServiceAccountToken(context.Background(), req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -105,7 +106,7 @@ func TestCreateServiceAccount(t *testing.T) {
 		IsDisabled: &isDisabled,
 	}
 
-	res, err := client.CreateServiceAccount(req)
+	res, err := client.CreateServiceAccount(context.Background(), req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -124,7 +125,7 @@ func TestUpdateServiceAccount(t *testing.T) {
 		IsDisabled: &isDisabled,
 	}
 
-	res, err := client.UpdateServiceAccount(5, req)
+	res, err := client.UpdateServiceAccount(context.Background(), 5, req)
 	if err != nil {
 		t.Error(err)
 	}
@@ -136,7 +137,7 @@ func TestDeleteServiceAccount(t *testing.T) {
 	server, client := gapiTestTools(t, http.StatusOK, deleteServiceAccountJSON)
 	defer server.Close()
 
-	res, err := client.DeleteServiceAccount(int64(1))
+	res, err := client.DeleteServiceAccount(context.Background(), int64(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -148,7 +149,7 @@ func TestDeleteServiceAccountToken(t *testing.T) {
 	server, client := gapiTestTools(t, http.StatusOK, deleteServiceAccountTokenJSON)
 	defer server.Close()
 
-	res, err := client.DeleteServiceAccountToken(int64(1), int64(1))
+	res, err := client.DeleteServiceAccountToken(context.Background(), int64(1), int64(1))
 	if err != nil {
 		t.Error(err)
 	}
@@ -160,7 +161,7 @@ func TestGetServiceAccounts(t *testing.T) {
 	server, client := gapiTestTools(t, http.StatusOK, searchServiceAccountsJSON)
 	defer server.Close()
 
-	res, err := client.GetServiceAccounts()
+	res, err := client.GetServiceAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
@@ -172,7 +173,7 @@ func TestGetServiceAccountTokens(t *testing.T) {
 	server, client := gapiTestTools(t, http.StatusOK, getServiceAccountTokensJSON)
 	defer server.Close()
 
-	res, err := client.GetServiceAccountTokens(5)
+	res, err := client.GetServiceAccountTokens(context.Background(), 5)
 	if err != nil {
 		t.Error(err)
 	}

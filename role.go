@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 )
@@ -24,9 +25,9 @@ type Permission struct {
 }
 
 // GetRole gets a role with permissions for the given UID. Available only in Grafana Enterprise 8.+.
-func (c *Client) GetRole(uid string) (*Role, error) {
+func (c *Client) GetRole(ctx context.Context, uid string) (*Role, error) {
 	r := &Role{}
-	err := c.request("GET", buildURL(uid), nil, nil, r)
+	err := c.request(ctx, "GET", buildURL(uid), nil, nil, r)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +35,7 @@ func (c *Client) GetRole(uid string) (*Role, error) {
 }
 
 // NewRole creates a new role with permissions. Available only in Grafana Enterprise 8.+.
-func (c *Client) NewRole(role Role) (*Role, error) {
+func (c *Client) NewRole(ctx context.Context, role Role) (*Role, error) {
 	data, err := json.Marshal(role)
 	if err != nil {
 		return nil, err
@@ -42,7 +43,7 @@ func (c *Client) NewRole(role Role) (*Role, error) {
 
 	r := &Role{}
 
-	err = c.request("POST", "/api/access-control/roles", nil, bytes.NewBuffer(data), &r)
+	err = c.request(ctx, "POST", "/api/access-control/roles", nil, bytes.NewBuffer(data), &r)
 	if err != nil {
 		return nil, err
 	}
@@ -51,23 +52,23 @@ func (c *Client) NewRole(role Role) (*Role, error) {
 }
 
 // UpdateRole updates the role and permissions. Available only in Grafana Enterprise 8.+.
-func (c *Client) UpdateRole(role Role) error {
+func (c *Client) UpdateRole(ctx context.Context, role Role) error {
 	data, err := json.Marshal(role)
 	if err != nil {
 		return err
 	}
 
-	err = c.request("PUT", buildURL(role.UID), nil, bytes.NewBuffer(data), nil)
+	err = c.request(ctx, "PUT", buildURL(role.UID), nil, bytes.NewBuffer(data), nil)
 
 	return err
 }
 
 // DeleteRole deletes the role with it's permissions. Available only in Grafana Enterprise 8.+.
-func (c *Client) DeleteRole(uid string, global bool) error {
+func (c *Client) DeleteRole(ctx context.Context, uid string, global bool) error {
 	qp := map[string][]string{
 		"global": {fmt.Sprint(global)},
 	}
-	return c.request("DELETE", buildURL(uid), qp, nil, nil)
+	return c.request(ctx, "DELETE", buildURL(uid), qp, nil, nil)
 }
 
 func buildURL(uid string) string {

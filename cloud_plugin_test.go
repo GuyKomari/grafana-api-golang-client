@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 )
 
@@ -47,7 +48,7 @@ func TestInstallCloudPlugin(t *testing.T) {
 	server, client := gapiTestTools(t, 200, installPluginJSON)
 	defer server.Close()
 
-	installation, err := client.InstallCloudPlugin("some-stack", "some-plugin", "1.2.3")
+	installation, err := client.InstallCloudPlugin(context.Background(), "some-stack", "some-plugin", "1.2.3")
 	if err != nil {
 		t.Error(err)
 	}
@@ -65,7 +66,7 @@ func TestInstallCloudPlugin(t *testing.T) {
 	for _, code := range []int{401, 403, 404, 412} {
 		server.code = code
 
-		installation, err = client.InstallCloudPlugin("some-stack", "some-plugin", "1.2.3")
+		installation, err = client.InstallCloudPlugin(context.Background(), "some-stack", "some-plugin", "1.2.3")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -79,7 +80,7 @@ func TestUninstallCloudPlugin(t *testing.T) {
 	server, client := gapiTestTools(t, 200, uninstallPluginJSON)
 	defer server.Close()
 
-	err := client.UninstallCloudPlugin("some-stack", "some-plugin")
+	err := client.UninstallCloudPlugin(context.Background(), "some-stack", "some-plugin")
 	if err != nil {
 		t.Error(err)
 	}
@@ -87,7 +88,7 @@ func TestUninstallCloudPlugin(t *testing.T) {
 	for _, code := range []int{401, 403, 404, 412} {
 		server.code = code
 
-		err = client.UninstallCloudPlugin("some-stack", "some-plugin")
+		err = client.UninstallCloudPlugin(context.Background(), "some-stack", "some-plugin")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -97,7 +98,7 @@ func TestUninstallCloudPlugin(t *testing.T) {
 func TestIsCloudPluginInstalled(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getPluginJSON)
 
-	ok, err := client.IsCloudPluginInstalled("some-stack", "some-plugin")
+	ok, err := client.IsCloudPluginInstalled(context.Background(), "some-stack", "some-plugin")
 	if err != nil {
 		t.Error(err)
 	}
@@ -107,7 +108,7 @@ func TestIsCloudPluginInstalled(t *testing.T) {
 	}
 
 	server.code = 404
-	ok, err = client.IsCloudPluginInstalled("some-stack", "some-plugin")
+	ok, err = client.IsCloudPluginInstalled(context.Background(), "some-stack", "some-plugin")
 	if err != nil {
 		t.Error(err)
 	}
@@ -119,7 +120,7 @@ func TestIsCloudPluginInstalled(t *testing.T) {
 	for _, code := range []int{401, 403, 412} {
 		server.code = code
 
-		_, err := client.IsCloudPluginInstalled("some-stack", "some-plugin")
+		_, err := client.IsCloudPluginInstalled(context.Background(), "some-stack", "some-plugin")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -130,7 +131,7 @@ func TestGetCloudPluginInstallation(t *testing.T) {
 	server, client := gapiTestTools(t, 200, installPluginJSON)
 	defer server.Close()
 
-	installation, err := client.GetCloudPluginInstallation("some-stack", "some-plugin")
+	installation, err := client.GetCloudPluginInstallation(context.Background(), "some-stack", "some-plugin")
 	if err != nil {
 		t.Error(err)
 	}
@@ -148,7 +149,7 @@ func TestGetCloudPluginInstallation(t *testing.T) {
 	for _, code := range []int{401, 403, 404, 412} {
 		server.code = code
 
-		installation, err = client.GetCloudPluginInstallation("some-stack", "some-plugin")
+		installation, err = client.GetCloudPluginInstallation(context.Background(), "some-stack", "some-plugin")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -162,7 +163,7 @@ func TestPlugin(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getPluginJSON)
 	defer server.Close()
 
-	plugin, err := client.PluginBySlug("some-plugin")
+	plugin, err := client.PluginBySlug(context.Background(), "some-plugin")
 	if err != nil {
 		t.Error(err)
 	}
@@ -180,7 +181,7 @@ func TestPlugin(t *testing.T) {
 	for _, code := range []int{404} {
 		server.code = code
 
-		_, err = client.PluginBySlug("some-plugin")
+		_, err = client.PluginBySlug(context.Background(), "some-plugin")
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}
@@ -191,7 +192,7 @@ func TestPluginByID(t *testing.T) {
 	server, client := gapiTestTools(t, 200, getPluginJSON)
 	defer server.Close()
 
-	plugin, err := client.PluginBySlug("some-plugin")
+	plugin, err := client.PluginBySlug(context.Background(), "some-plugin")
 	if err != nil {
 		t.Error(err)
 	}
@@ -209,7 +210,7 @@ func TestPluginByID(t *testing.T) {
 	for _, code := range []int{404} {
 		server.code = code
 
-		_, err = client.PluginByID(123)
+		_, err = client.PluginByID(context.Background(), 123)
 		if err == nil {
 			t.Errorf("%d not detected", code)
 		}

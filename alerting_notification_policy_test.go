@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -11,7 +12,7 @@ func TestNotificationPolicies(t *testing.T) {
 		server, client := gapiTestTools(t, 200, notificationPolicyJSON)
 		defer server.Close()
 
-		np, err := client.NotificationPolicyTree()
+		np, err := client.NotificationPolicyTree(context.Background())
 
 		if err != nil {
 			t.Error(err)
@@ -30,7 +31,7 @@ func TestNotificationPolicies(t *testing.T) {
 		defer server.Close()
 		np := createNotificationPolicy()
 
-		err := client.SetNotificationPolicyTree(&np)
+		err := client.SetNotificationPolicyTree(context.Background(), &np)
 
 		if err != nil {
 			t.Error(err)
@@ -41,7 +42,7 @@ func TestNotificationPolicies(t *testing.T) {
 		server, client := gapiTestTools(t, 200, notificationPolicyJSON)
 		defer server.Close()
 
-		err := client.ResetNotificationPolicyTree()
+		err := client.ResetNotificationPolicyTree(context.Background())
 
 		if err != nil {
 			t.Error(err)

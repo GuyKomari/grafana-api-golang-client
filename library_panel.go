@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -70,7 +71,7 @@ type LibraryPanelConnection struct {
 }
 
 // NewLibraryPanel creates a new Grafana library panel.
-func (c *Client) NewLibraryPanel(panel LibraryPanel) (*LibraryPanel, error) {
+func (c *Client) NewLibraryPanel(ctx context.Context, panel LibraryPanel) (*LibraryPanel, error) {
 	panel.Kind = int64(1)
 	data, err := json.Marshal(panel)
 	if err != nil {
@@ -78,7 +79,7 @@ func (c *Client) NewLibraryPanel(panel LibraryPanel) (*LibraryPanel, error) {
 	}
 
 	resp := &LibraryPanelCreateResponse{}
-	err = c.request("POST", "/api/library-elements", nil, bytes.NewBuffer(data), &resp)
+	err = c.request(ctx, "POST", "/api/library-elements", nil, bytes.NewBuffer(data), &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +88,11 @@ func (c *Client) NewLibraryPanel(panel LibraryPanel) (*LibraryPanel, error) {
 }
 
 // Dashboards fetches and returns all dashboards.
-func (c *Client) LibraryPanels() ([]LibraryPanel, error) {
+func (c *Client) LibraryPanels(ctx context.Context) ([]LibraryPanel, error) {
 	resp := &struct {
 		Result LibraryPanelGetAllResponse `json:"result"`
 	}{}
-	err := c.request("GET", "/api/library-elements", nil, nil, &resp)
+	err := c.request(ctx, "GET", "/api/library-elements", nil, nil, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -100,11 +101,11 @@ func (c *Client) LibraryPanels() ([]LibraryPanel, error) {
 }
 
 // LibraryPanelByUID gets a library panel by UID.
-func (c *Client) LibraryPanelByUID(uid string) (*LibraryPanel, error) {
+func (c *Client) LibraryPanelByUID(ctx context.Context, uid string) (*LibraryPanel, error) {
 	resp := &LibraryPanelCreateResponse{}
 	path := fmt.Sprintf("/api/library-elements/%s", uid)
 
-	err := c.request("GET", path, nil, nil, &resp)
+	err := c.request(ctx, "GET", path, nil, nil, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -113,13 +114,13 @@ func (c *Client) LibraryPanelByUID(uid string) (*LibraryPanel, error) {
 }
 
 // LibraryPanelByName gets a library panel by name.
-func (c *Client) LibraryPanelByName(name string) (*LibraryPanel, error) {
+func (c *Client) LibraryPanelByName(ctx context.Context, name string) (*LibraryPanel, error) {
 	var resp struct {
 		Result []LibraryPanel `json:"result"`
 	}
 	path := fmt.Sprintf("/api/library-elements/name/%s", name)
 
-	err := c.request("GET", path, nil, nil, &resp)
+	err := c.request(ctx, "GET", path, nil, nil, &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -132,13 +133,13 @@ func (c *Client) LibraryPanelByName(name string) (*LibraryPanel, error) {
 }
 
 // PatchLibraryPanel updates one or more properties of an existing panel that matches the specified UID.
-func (c *Client) PatchLibraryPanel(uid string, panel LibraryPanel) (*LibraryPanel, error) {
+func (c *Client) PatchLibraryPanel(ctx context.Context, uid string, panel LibraryPanel) (*LibraryPanel, error) {
 	path := fmt.Sprintf("/api/library-elements/%s", uid)
 	panel.Kind = int64(1)
 
 	// if Version not specified, get current version from API
 	if panel.Version == int64(0) {
-		remotePanel, err := c.LibraryPanelByUID(panel.UID)
+		remotePanel, err := c.LibraryPanelByUID(ctx, panel.UID)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +152,7 @@ func (c *Client) PatchLibraryPanel(uid string, panel LibraryPanel) (*LibraryPane
 	}
 
 	resp := &LibraryPanelCreateResponse{}
-	err = c.request("PATCH", path, nil, bytes.NewBuffer(data), &resp)
+	err = c.request(ctx, "PATCH", path, nil, bytes.NewBuffer(data), &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -160,11 +161,11 @@ func (c *Client) PatchLibraryPanel(uid string, panel LibraryPanel) (*LibraryPane
 }
 
 // DeleteLibraryPanel deletes a panel by UID.
-func (c *Client) DeleteLibraryPanel(uid string) (*LibraryPanelDeleteResponse, error) {
+func (c *Client) DeleteLibraryPanel(ctx context.Context, uid string) (*LibraryPanelDeleteResponse, error) {
 	path := fmt.Sprintf("/api/library-elements/%s", uid)
 
 	resp := &LibraryPanelDeleteResponse{}
-	err := c.request("DELETE", path, nil, bytes.NewBuffer(nil), &resp)
+	err := c.request(ctx, "DELETE", path, nil, bytes.NewBuffer(nil), &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -173,14 +174,14 @@ func (c *Client) DeleteLibraryPanel(uid string) (*LibraryPanelDeleteResponse, er
 }
 
 // LibraryPanelConnections gets library panel connections by UID.
-func (c *Client) LibraryPanelConnections(uid string) (*[]LibraryPanelConnection, error) {
+func (c *Client) LibraryPanelConnections(ctx context.Context, uid string) (*[]LibraryPanelConnection, error) {
 	path := fmt.Sprintf("/api/library-elements/%s/connections", uid)
 
 	resp := struct {
 		Result []LibraryPanelConnection `json:"result"`
 	}{}
 
-	err := c.request("GET", path, nil, bytes.NewBuffer(nil), &resp)
+	err := c.request(ctx, "GET", path, nil, bytes.NewBuffer(nil), &resp)
 	if err != nil {
 		return nil, err
 	}
@@ -189,8 +190,8 @@ func (c *Client) LibraryPanelConnections(uid string) (*[]LibraryPanelConnection,
 }
 
 // LibraryPanelConnectedDashboards gets Dashboards using this Library Panel.
-func (c *Client) LibraryPanelConnectedDashboards(uid string) ([]FolderDashboardSearchResponse, error) {
-	connections, err := c.LibraryPanelConnections(uid)
+func (c *Client) LibraryPanelConnectedDashboards(ctx context.Context, uid string) ([]FolderDashboardSearchResponse, error) {
+	connections, err := c.LibraryPanelConnections(ctx, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -200,5 +201,5 @@ func (c *Client) LibraryPanelConnectedDashboards(uid string) ([]FolderDashboardS
 		dashboardIds = append(dashboardIds, connection.DashboardID)
 	}
 
-	return c.DashboardsByIDs(dashboardIds)
+	return c.DashboardsByIDs(ctx, dashboardIds)
 }

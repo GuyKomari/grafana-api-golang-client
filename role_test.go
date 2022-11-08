@@ -1,6 +1,7 @@
 package gapi
 
 import (
+	"context"
 	"testing"
 
 	"github.com/gobs/pretty"
@@ -75,7 +76,7 @@ func TestNewRole(t *testing.T) {
 		},
 	}
 
-	resp, err := client.NewRole(roleReq)
+	resp, err := client.NewRole(context.Background(), roleReq)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -95,7 +96,7 @@ func TestGetRole(t *testing.T) {
 
 	uid := "vc3SCSsGz"
 
-	resp, err := client.GetRole(uid)
+	resp, err := client.GetRole(context.Background(), uid)
 
 	if err != nil {
 		t.Error(err)
@@ -143,7 +144,7 @@ func TestUpdateRole(t *testing.T) {
 		},
 	}
 
-	err := client.UpdateRole(roleReq)
+	err := client.UpdateRole(context.Background(), roleReq)
 	if err != nil {
 		t.Error(err)
 	}
@@ -155,7 +156,7 @@ func TestDeleteRole(t *testing.T) {
 		server.Close()
 	})
 
-	err := client.DeleteRole("vc3SCSsGz", false)
+	err := client.DeleteRole(context.Background(), "vc3SCSsGz", false)
 	if err != nil {
 		t.Error(err)
 	}

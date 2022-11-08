@@ -2,6 +2,7 @@ package gapi
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -28,7 +29,7 @@ type CloudPluginInstallation struct {
 }
 
 // InstallCloudPlugin installs the specified plugin to the given stack.
-func (c *Client) InstallCloudPlugin(stackSlug string, pluginSlug string, pluginVersion string) (*CloudPluginInstallation, error) {
+func (c *Client) InstallCloudPlugin(ctx context.Context, stackSlug string, pluginSlug string, pluginVersion string) (*CloudPluginInstallation, error) {
 	installPluginRequest := struct {
 		Plugin  string `json:"plugin"`
 		Version string `json:"version"`
@@ -44,7 +45,7 @@ func (c *Client) InstallCloudPlugin(stackSlug string, pluginSlug string, pluginV
 
 	var installation CloudPluginInstallation
 
-	err = c.request("POST", fmt.Sprintf("/api/instances/%s/plugins", stackSlug), nil, bytes.NewBuffer(data), &installation)
+	err = c.request(ctx, "POST", fmt.Sprintf("/api/instances/%s/plugins", stackSlug), nil, bytes.NewBuffer(data), &installation)
 	if err != nil {
 		return nil, err
 	}
@@ -53,13 +54,13 @@ func (c *Client) InstallCloudPlugin(stackSlug string, pluginSlug string, pluginV
 }
 
 // UninstallCloudPlugin uninstalls the specified plugin to the given stack.
-func (c *Client) UninstallCloudPlugin(stackSlug string, pluginSlug string) error {
-	return c.request("DELETE", fmt.Sprintf("/api/instances/%s/plugins/%s", stackSlug, pluginSlug), nil, nil, nil)
+func (c *Client) UninstallCloudPlugin(ctx context.Context, stackSlug string, pluginSlug string) error {
+	return c.request(ctx, "DELETE", fmt.Sprintf("/api/instances/%s/plugins/%s", stackSlug, pluginSlug), nil, nil, nil)
 }
 
 // IsCloudPluginInstalled returns a boolean if the specified plugin is installed on the stack.
-func (c *Client) IsCloudPluginInstalled(stackSlug string, pluginSlug string) (bool, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("/api/instances/%s/plugins/%s", stackSlug, pluginSlug), nil, nil)
+func (c *Client) IsCloudPluginInstalled(ctx context.Context, stackSlug string, pluginSlug string) (bool, error) {
+	req, err := c.newRequest(ctx, "GET", fmt.Sprintf("/api/instances/%s/plugins/%s", stackSlug, pluginSlug), nil, nil)
 	if err != nil {
 		return false, err
 	}
@@ -87,10 +88,10 @@ func (c *Client) IsCloudPluginInstalled(stackSlug string, pluginSlug string) (bo
 }
 
 // GetCloudPluginInstallation returns the cloud plugin installation details for the specified plugin.
-func (c *Client) GetCloudPluginInstallation(stackSlug string, pluginSlug string) (*CloudPluginInstallation, error) {
+func (c *Client) GetCloudPluginInstallation(ctx context.Context, stackSlug string, pluginSlug string) (*CloudPluginInstallation, error) {
 	var installation CloudPluginInstallation
 
-	err := c.request("GET", fmt.Sprintf("/api/instances/%s/plugins/%s", stackSlug, pluginSlug), nil, nil, &installation)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/instances/%s/plugins/%s", stackSlug, pluginSlug), nil, nil, &installation)
 	if err != nil {
 		return nil, err
 	}
@@ -100,10 +101,10 @@ func (c *Client) GetCloudPluginInstallation(stackSlug string, pluginSlug string)
 
 // PluginBySlug returns the plugin with the given slug.
 // An error will be returned given an unknown slug.
-func (c *Client) PluginBySlug(slug string) (*Plugin, error) {
+func (c *Client) PluginBySlug(ctx context.Context, slug string) (*Plugin, error) {
 	p := Plugin{}
 
-	err := c.request("GET", fmt.Sprintf("/api/plugins/%s", slug), nil, nil, &p)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/plugins/%s", slug), nil, nil, &p)
 	if err != nil {
 		return nil, err
 	}
@@ -113,10 +114,10 @@ func (c *Client) PluginBySlug(slug string) (*Plugin, error) {
 
 // PluginByID returns the plugin with the given id.
 // An error will be returned given an unknown ID.
-func (c *Client) PluginByID(pluginID int64) (*Plugin, error) {
+func (c *Client) PluginByID(ctx context.Context, pluginID int64) (*Plugin, error) {
 	p := Plugin{}
 
-	err := c.request("GET", fmt.Sprintf("/api/plugins/%d", pluginID), nil, nil, p)
+	err := c.request(ctx, "GET", fmt.Sprintf("/api/plugins/%d", pluginID), nil, nil, p)
 	if err != nil {
 		return nil, err
 	}
