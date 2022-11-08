@@ -133,3 +133,9 @@ func (c *Client) DeleteDataSource(ctx context.Context, id int64) error {
 
 	return c.request(ctx, "DELETE", path, nil, nil, nil)
 }
+
+func (c *Client) DeleteDataSourceByName(ctx context.Context, name string) error {
+	path := fmt.Sprintf("/api/datasources/name/%s", name)
+
+	return c.request(ctx, "DELETE", path, nil, nil, nil)
+}
